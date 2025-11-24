@@ -1,0 +1,15 @@
+Esercizio 3
+ Il volume nell'unità C non ha etichetta.
+ Numero di serie del volume: 8C8E-36BD
+
+ Directory di C:\Users\AlessandroBuongallin\OneDrive - ITS Angelo Rizzoli\Desktop\Codice\UFS01\L05\Esercizio3\Esercizio 3
+
+10/11/2025  17:50    <DIR>          .
+10/11/2025  17:50    <DIR>          ..
+10/11/2025  17:50                 4 a.txt
+10/11/2025  17:50                 4 b.txt
+10/11/2025  17:50                 4 c.txt
+10/11/2025  17:50                 4 d.txt
+               4 File             16 byte
+               2 Directory  432.204.406.784 byte disponibili
+Finito.

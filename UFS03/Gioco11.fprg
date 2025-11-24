@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<flowgorithm fileversion="4.2">
+    <attributes>
+        <attribute name="name" value="Gioco11"/>
+        <attribute name="authors" value="AlessandroBuongallin"/>
+        <attribute name="about" value=""/>
+        <attribute name="saved" value="2025-10-27 12:59:26 "/>
+        <attribute name="created" value="QWxlc3NhbmRyb0J1b25nYWxsaW47REVTS1RPUC1GQTlCUDBOOzIwMjUtMTAtMjc7IjEyOjM5OjI2ICI7NDMxNQ=="/>
+        <attribute name="edited" value="QWxlc3NhbmRyb0J1b25nYWxsaW47REVTS1RPUC1GQTlCUDBOOzIwMjUtMTAtMjc7IjEyOjU5OjI2ICI7MTs0NDI1"/>
+    </attributes>
+    <function name="Main" type="None" variable="">
+        <parameters/>
+        <body>
+            <declare name="Fiammiferi, Scelta, GiocA, GiocB" type="Integer" array="False" size=""/>
+            <declare name="TurnoGA" type="Boolean" array="False" size=""/>
+            <assign variable="Fiammiferi" expression="11"/>
+            <do expression="Scelta != 0 &amp;&amp; Scelta != 1">
+                <output expression="&quot;Inizia Gioc A? 1=Si, 0=No&quot;" newline="True"/>
+                <input variable="Scelta"/>
+                <if expression="Scelta != 0 &amp;&amp; Scelta != 1">
+                    <then>
+                        <output expression="&quot;Input Errato&quot;" newline="True"/>
+                    </then>
+                    <else/>
+                </if>
+            </do>
+            <if expression="Scelta == 1">
+                <then>
+                    <output expression="&quot;Il Giocatore A toglie 2 Fiammiferi&quot;" newline="True"/>
+                    <assign variable="Fiammiferi" expression="Fiammiferi - 2"/>
+                    <output expression="Fiammiferi" newline="True"/>
+                    <assign variable="GiocB" expression="Random(3)+1"/>
+                    <output expression="&quot;Il giocatore B toglie &quot;&amp;GiocB&amp;&quot; fiammiferi&quot;" newline="True"/>
+                    <assign variable="Fiammiferi" expression="Fiammiferi - GiocB"/>
+                    <output expression="Fiammiferi" newline="True"/>
+                    <assign variable="GiocA" expression="Fiammiferi - 5"/>
+                    <output expression="&quot;Il giocatore A toglie &quot;&amp;GiocA&amp;&quot; fiammiferi&quot;" newline="True"/>
+                    <assign variable="Fiammiferi" expression="Fiammiferi - GiocA"/>
+                    <output expression="Fiammiferi" newline="True"/>
+                    <assign variable="GiocB" expression="Random(3)+1"/>
+                    <output expression="&quot;Il giocatore B toglie &quot;&amp;GiocB&amp;&quot; fiammiferi&quot;" newline="True"/>
+                    <assign variable="Fiammiferi" expression="Fiammiferi - GiocB"/>
+                    <output expression="Fiammiferi" newline="True"/>
+                    <assign variable="GiocA" expression="Fiammiferi - 1"/>
+                    <output expression="&quot;Il giocatore A toglie &quot;&amp;GiocA&amp;&quot; fiammiferi&quot;" newline="True"/>
+                    <assign variable="Fiammiferi" expression="Fiammiferi - GiocA"/>
+                    <output expression="Fiammiferi" newline="True"/>
+                    <output expression="&quot;Il giocatore B toglie 1 fiammifero. Il giocatore B ha perso&quot;" newline="True"/>
+                    <assign variable="Fiammiferi" expression="Fiammiferi - 1"/>
+                    <output expression="Fiammiferi" newline="True"/>
+                </then>
+                <else/>
+            </if>
+        </body>
+    </function>
+</flowgorithm>

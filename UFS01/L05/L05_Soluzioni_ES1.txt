@@ -1,0 +1,24 @@
+Sottodirectory o file Esercizio1 già esistente.
+
+ Il volume nell'unità C non ha etichetta.
+ Numero di serie del volume: 8C8E-36BD
+
+ Directory di C:\Users\AlessandroBuongallin\OneDrive - ITS Angelo Rizzoli\Desktop\Codice\UFS01\L05\Esercizio1
+
+10/11/2025  17:37    <DIR>          .
+10/11/2025  17:36    <DIR>          ..
+10/11/2025  17:36                 0 file1.txt
+10/11/2025  17:37                 0 file2.txt
+               2 File              0 byte
+               2 Directory  432.183.087.104 byte disponibili
+
+69.790 byte
+
+Si apre la calcolatrice
+
+Si apre un nuovo cmd
+
+Si chiude il cmd appena creato
+
+Si chiude il primo cmd
+
