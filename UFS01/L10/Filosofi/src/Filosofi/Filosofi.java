@@ -26,7 +26,7 @@ public class Filosofi extends Thread {
 
     }
 
-    boolean[] Forks = {false, false, false, false, false};
+    static boolean[] Forks = {false, false, false, false, false};
 
     int f1;
     int f2;
