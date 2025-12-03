@@ -4,10 +4,8 @@ import java.util.Random;
 
 public class Filosofi extends Thread {
     
-    boolean[] Forks = {false, false, false, false, false};
     public static void main(String[] args) throws InterruptedException {
         
-
         Filosofi Fil1 = new Filosofi(1,2);
         Filosofi Fil2 = new Filosofi(2,3);
         Filosofi Fil3 = new Filosofi(3,4);
@@ -28,6 +26,8 @@ public class Filosofi extends Thread {
 
     }
 
+    boolean[] Forks = {false, false, false, false, false};
+
     int f1;
     int f2;
 
@@ -47,7 +47,6 @@ public class Filosofi extends Thread {
             try {
                 sleep((long)random.nextInt(2,5)*1000);
             } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
 
