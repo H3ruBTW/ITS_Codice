@@ -5,6 +5,8 @@ import java.util.Random;
 public class Filosofi extends Thread {
     
     public static void main(String[] args) throws InterruptedException {
+
+        
         
         Filosofi Fil1 = new Filosofi(1,2);
         Filosofi Fil2 = new Filosofi(2,3);
