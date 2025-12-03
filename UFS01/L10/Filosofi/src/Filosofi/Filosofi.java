@@ -12,11 +12,11 @@ public class Filosofi extends Thread {
         Filosofi Fil4 = new Filosofi(4,5);
         Filosofi Fil5 = new Filosofi(5,1);
 
-        Fil1.run();
-        Fil2.run();
-        Fil3.run();
-        Fil4.run();
-        Fil5.run();
+        Fil1.start();
+        Fil2.start();
+        Fil3.start();
+        Fil4.start();
+        Fil5.start();
 
         Fil1.join();
         Fil2.join();
