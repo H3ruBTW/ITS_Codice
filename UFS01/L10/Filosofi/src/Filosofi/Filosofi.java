@@ -65,6 +65,12 @@ public class Filosofi extends Thread {
 
             Forks[f1] = true;
 
+            try {
+                sleep(250);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
             System.out.println(this.getName() + " sta aspettando la forchetta alla sua destra");
 
             while (Forks[f2] == true){
