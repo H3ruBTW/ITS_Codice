@@ -44,17 +44,22 @@ int main(){
         }
     }
 
-    int temp;
-    
-    for(int i=0; i<5; i++){
-        if(i != cartasegreta[2] && i != carte_buttate[0][2]){
-            carte_buttate[1][0] = carte[i][0];
-            carte_buttate[1][1] = carte[i][1];
-            carte_buttate[1][2] = i;
-            break;
+    //switcha le carte se cartasegreta+6 non arriva ciclicamente a carta buttata1
+    if(cartasegreta[1]-carte_buttate[0][1] < 0){
+        if(!(cartasegreta[1]+6 >= carte_buttate[0][1])){
+            
         }
     }
 
-    carte_buttate[1][0] = carte[]
+    int temp=1;
+    
+    for(int i=0; i<5; i++){
+        if(i != cartasegreta[2] && i != carte_buttate[0][2]){
+            carte_buttate[temp][0] = carte[i][0];
+            carte_buttate[temp][1] = carte[i][1];
+            carte_buttate[temp][2] = i;
+            temp++;
+        }
+    }
 
 }
