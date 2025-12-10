@@ -104,5 +104,123 @@ int main(){
     int scarto = carte_buttate[0][1] - cartasegreta[1];
 
     printf("\nScarto: %d\n", scarto);
+
+    int min = 1;
+    int mag = 1;
+
+    for(int i=2; i<4; i++){
+        if(carte_buttate[i][0] < carte_buttate[min][0]){
+            min = i;
+            continue;
+        }
+
+        if(carte_buttate[i][0] == carte_buttate[min][0]){
+            if(carte_buttate[i][1] < carte_buttate[min][1])
+                min = i;
+
+            if(carte_buttate[i][1] > carte_buttate[mag][1])
+                mag = i;
+
+            continue;
+        }
+
+        if(carte_buttate[i][0] > carte_buttate[mag][0]){
+            mag = i;
+            continue;
+        }
+    }
+
+    int cen;
+
+    if(min == 1){
+        if(mag == 2)
+            cen = 3;
+        else
+            cen = 2;
+    } else {
+        if(min == 2){
+            if(mag == 1)
+                cen = 3;
+            else
+                cen = 1;
+        } else {
+            if(mag == 1)
+                cen = 2;
+            else
+                cen = 1;
+        }
+    }
+
+    printf("\nMaggiore: %d - Centro: %d - Minore: %d\n", mag, cen, min);
+
+    int cMag[2] = {carte_buttate[mag][0], carte_buttate[mag][1]};
+    int cMin[2] = {carte_buttate[min][0], carte_buttate[min][1]};
+    int cCen[2] = {carte_buttate[cen][0], carte_buttate[cen][1]};
+
+    switch (scarto){
+    case 1:
+        carte_buttate[1][0] = cMin[0];
+        carte_buttate[1][1] = cMin[1];
+        carte_buttate[2][0] = cCen[0];
+        carte_buttate[2][1] = cCen[1];
+        carte_buttate[3][0] = cMag[0];
+        carte_buttate[3][1] = cMag[1];
+        break;
+
+    case 2:
+        carte_buttate[1][0] = cMin[0];
+        carte_buttate[1][1] = cMin[1];
+        carte_buttate[3][0] = cCen[0];
+        carte_buttate[3][1] = cCen[1];
+        carte_buttate[2][0] = cMag[0];
+        carte_buttate[2][1] = cMag[1];
+        break;
+
+    case 3:
+        carte_buttate[2][0] = cMin[0];
+        carte_buttate[2][1] = cMin[1];
+        carte_buttate[1][0] = cCen[0];
+        carte_buttate[1][1] = cCen[1];
+        carte_buttate[3][0] = cMag[0];
+        carte_buttate[3][1] = cMag[1];
+        break;
+
+    case 4:
+        carte_buttate[3][0] = cMin[0];
+        carte_buttate[3][1] = cMin[1];
+        carte_buttate[1][0] = cCen[0];
+        carte_buttate[1][1] = cCen[1];
+        carte_buttate[2][0] = cMag[0];
+        carte_buttate[2][1] = cMag[1];
+        break;
+
+    case 5:
+        carte_buttate[2][0] = cMin[0];
+        carte_buttate[2][1] = cMin[1];
+        carte_buttate[3][0] = cCen[0];
+        carte_buttate[3][1] = cCen[1];
+        carte_buttate[1][0] = cMag[0];
+        carte_buttate[1][1] = cMag[1];
+        break;
+
+    case 6:
+        carte_buttate[3][0] = cMin[0];
+        carte_buttate[3][1] = cMin[1];
+        carte_buttate[2][0] = cCen[0];
+        carte_buttate[2][1] = cCen[1];
+        carte_buttate[1][0] = cMag[0];
+        carte_buttate[1][1] = cMag[1];
+        break; 
     
+    default:
+        break;
+    }
+    
+    printf("\nModo in cui verrano buttate le carte:\n");
+    printf("Carta segreta: %d - %d\n", cartasegreta[0], cartasegreta[1]);
+
+    for (int i = 0; i < 4; i++)
+    {
+        printf("Carta %d: %d - %d\n", i, carte_buttate[i][0], carte_buttate[i][1]);
+    }
 }
