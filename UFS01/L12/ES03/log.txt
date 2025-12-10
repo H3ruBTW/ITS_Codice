@@ -1,0 +1,10 @@
+LOG    Avvio del servizio completato con successo.
+ERROR  Impossibile caricare il modulo di configurazione.
+LOG    Connessione stabilita con il server remoto.
+ERROR  Timeout durante la comunicazione con il database.
+LOG    File di configurazione letto correttamente.
+ERROR  Permessi insufficienti per accedere alla directory richiesta.
+LOG    Processo terminato senza anomalie.
+ERROR  Impossibile analizzare il file di input, formato non valido.
+LOG    Utente autenticato e sessione avviata.
+ERROR  Errore imprevisto durante l'esecuzione dello script.
