@@ -10,15 +10,14 @@ public class ES4 {
 
         int num = scanner.nextInt();
 
-        boolean primo;
+        boolean primo = true;
 
         if(num <= 1)
             primo = false;
-        else
-            primo = true;
 
 
-        for(int i=2; i<num && primo; i++){
+
+        for(int i=2; primo && i<num/2; i++){
             if(num%i == 0)
                 primo = false;
         }
@@ -27,5 +26,7 @@ public class ES4 {
             System.out.println("Il numero è primo");
         else 
             System.out.println("Il numero non è primo");
+
+        scanner.close();
     }
 }
