@@ -17,6 +17,6 @@ public class ES1 {
         System.out.print("C: ");
         float n3 = scanner.nextFloat();
 
-        System.out.println("La media dei tre numeri è: " + (float)(n1+n2+n3)/3);
+        System.out.println("La media dei tre numeri è: " + (n1+n2+n3)/3);
     }
 }
