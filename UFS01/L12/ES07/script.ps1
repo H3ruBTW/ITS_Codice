@@ -1,0 +1,1 @@
+Import-Csv "dati.csv" | ConvertTo-Html -Property Nome, Eta -Title "Report" | Out-File "Report.html"

@@ -1,0 +1,5 @@
+1) ls -la
+2) mkdir -p Progetto/{src,bin}
+3) rmdir rimuove solo le directory, rm rimuove solo i file ma in caso viene aggiunta l'opzione -r, cancella la directory e tutti i suoi rami
+4) mv vecchia nuova
+5) -i

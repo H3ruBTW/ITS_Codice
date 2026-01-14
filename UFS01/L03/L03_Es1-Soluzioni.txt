@@ -1,0 +1,17 @@
+64 bit
+Ryzen 7 5700U 1.8GHz
+16 GB
+1 disco fisso da 477GB
+190 processi
+36% di RAM occupata
+405GB liberi di 477GB
+
+Calc
+PID: 2952
+RAM usata: 25,2MB
+CPU usata durante lettura: 0,8%
+
+Word
+PID: 7180
+RAM usata: 75,9MB
+CPU usata: 3,5%

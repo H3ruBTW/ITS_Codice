@@ -1,0 +1,1 @@
+Get-Content -Path .\log.txt | Where-Object { $_ -match "ERROR"} | Add-Content -Path .\error.txt

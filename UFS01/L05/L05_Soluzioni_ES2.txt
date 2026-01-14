@@ -1,0 +1,15 @@
+Crea un file di nome echo.txt con all'interno scritto "Hello World!"
+
+Mostra solo il file indicato nel comando
+ Il volume nell'unità C non ha etichetta.
+ Numero di serie del volume: 8C8E-36BD
+
+ Directory di C:\Users\AlessandroBuongallin\OneDrive - ITS Angelo Rizzoli\Desktop\Codice\UFS01\L05\Esercizio2
+
+10/11/2025  17:42                17 echo.txt
+               1 File             17 byte
+               0 Directory  432.224.174.080 byte disponibili
+
+Crea un file .cmd con all'interno il comando dir
+
+Effettua il comando dir ma in esecuzione dal file

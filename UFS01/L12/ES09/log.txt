@@ -1,0 +1,2 @@
+ERROR - Il file non stato aperto
+ERROR - Il file non è stato aperto

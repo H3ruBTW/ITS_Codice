@@ -1,0 +1,5 @@
+ERROR  Impossibile caricare il modulo di configurazione.
+ERROR  Timeout durante la comunicazione con il database.
+ERROR  Permessi insufficienti per accedere alla directory richiesta.
+ERROR  Impossibile analizzare il file di input, formato non valido.
+ERROR  Errore imprevisto durante l'esecuzione dello script.

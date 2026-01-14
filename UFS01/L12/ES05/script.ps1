@@ -1,0 +1,1 @@
+Get-Process | Where-Object { $_.CPU -ge 10} | Select-Object Name, CPU

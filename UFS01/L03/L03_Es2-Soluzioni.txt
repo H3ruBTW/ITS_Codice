@@ -1,0 +1,75 @@
+Istruzione N°1
+NOP, non viene effettuato niente
+Istruzione N°2
+Viene caricato quello che è scritto nella X nel MDR tramite l'operazione uguale
+Istruzione N°3
+Avviene il Jump nella cell 11 se la MDR è 0 ma non lo è e quindi avanza
+Istruzione N°4
+Sottrae 1 al MDR
+Istruzione N°5
+Salva la MDR in X
+Istruzione N°6
+Viene caricato quello che è scritto nella Y nel MDR tramite l'operazione uguale
+Istruzione N°7
+Avviene il Jump nella cell 15 se la MDR è 0 ma non lo è e quindi avanza
+Istruzione N°8
+Sottrae 1 al MDR
+Istruzione N°9
+Salva la MDR in Y
+Istruzione N°10
+Salta nella cell 1
+Istruzione N°11
+Viene caricato quello che è scritto nella X nel MDR tramite l'operazione uguale
+Istruzione N°12
+Avviene il Jump nella cell 11 se la MDR è 0 ma non lo è e quindi avanza
+Istruzione N°13
+Sottrae 1 al MDR
+Istruzione N°14
+Salva la MDR in X
+Istruzione N°15
+Viene caricato quello che è scritto nella Y nel MDR tramite l'operazione uguale
+Istruzione N°16
+Avviene il Jump nella cell 15 se la MDR è 0 ma non lo è e quindi avanza
+Istruzione N°17
+Sottrae 1 al MDR
+Istruzione N°18
+Salva la MDR in Y
+Istruzione N°19
+Salta nella cell 1
+Istruzione N°20
+Viene caricato quello che è scritto nella X nel MDR tramite l'operazione uguale
+Istruzione N°21
+Avviene il Jump nella cell 11 se la MDR è 0 ma non lo è e quindi avanza
+Istruzione N°22
+Sottrae 1 al MDR
+Istruzione N°23
+Salva la MDR in X
+Istruzione N°24
+Viene caricato quello che è scritto nella Y nel MDR tramite l'operazione uguale
+Istruzione N°25
+Avviene il Jump nella cell 15 se la MDR è 0 ma non lo è e quindi avanza
+Istruzione N°26
+Sottrae 1 al MDR
+Istruzione N°27
+Salva la MDR in Y
+Istruzione N°28
+Salta nella cell 1
+Istruzione N°29
+Viene caricato quello che è scritto nella X nel MDR tramite l'operazione uguale
+Istruzione N°30
+Avviene il Jump nella cell 11 se la MDR è 0 ma non lo è e quindi avanza
+Istruzione N°31
+Sottrae 1 al MDR
+Istruzione N°32
+Salva la MDR in X
+Istruzione N°33
+Viene caricato quello che è scritto nella Y nel MDR tramite l'operazione uguale
+Istruzione N°34
+Avviene il Jump nella cell 15 se la MDR è 0, lo è e quindi avanza
+Istruzione N°35
+Viene caricato il numero 1 nel MDR
+Istruzione N°36
+Salva la MDR in Z
+Istruzione N°37
+Finisce il programma
+
