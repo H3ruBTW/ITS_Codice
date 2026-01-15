@@ -37,5 +37,7 @@ public class ES7 {
         }
 
         System.out.println("La media dei numeri maggiori a " + media_i + " è " + media_f/times);
+
+        scanner.close();
     }
 }

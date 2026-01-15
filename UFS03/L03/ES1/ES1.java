@@ -26,5 +26,7 @@ public class ES1 {
 
         System.out.println("Il massimo trovato è " + max + "\nMentre il minimo trovato è " + min);
 
+        scanner.close();
+
     }
 }

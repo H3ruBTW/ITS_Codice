@@ -29,5 +29,7 @@ public class ES2 {
             System.out.println("Il numero " + Numt + " è stato trovato");
         else
             System.out.println("Il numero non è stato trovato :(");
+
+        scanner.close();
     }
 }

@@ -27,6 +27,8 @@ public class ES3 {
         }while(num != 0);
 
         System.out.println("Sono stati trovati:\n- Positivi: " + pos + "\n- Negativi: " + neg + "\n- Pari: " + par);
+
+        scanner.close();
     }
     
 }

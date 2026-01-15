@@ -20,5 +20,7 @@ public class ES4 {
         }while(num != 0);
 
         System.out.println("La somma è " + somma);
+
+        scanner.close();
     }
 }

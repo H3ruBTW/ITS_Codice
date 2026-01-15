@@ -21,6 +21,8 @@ public class ES5 {
         }
 
         System.out.println("Il numero " + max + " è il maggiore e si è trovato nella posizione n° " + pos);
+
+        scanner.close();
     }
     
 

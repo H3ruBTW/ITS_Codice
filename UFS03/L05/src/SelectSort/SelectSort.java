@@ -1,8 +1,8 @@
-package BubbleSort;
+package SelectSort;
 
 import java.util.Random;
 
-public class BubbleSort {
+public class SelectSort {
     public static void main(String[] args) {
         int[] array = creaArray();
 
@@ -11,19 +11,15 @@ public class BubbleSort {
         }
         System.out.println();
 
-        boolean scambio;
-
-        do{
-            scambio = false;
-
-            for(int i=0; i<array.length-1; i++){
-                if(array[i]>array[i+1]){
-                    scambioArray(array, i, i+1);
-                    scambio = true;
-                }
+        for(int i=0; i<array.length-1; i++){
+            int indiceMin = i;
+            for(int j=i+1; j<array.length; j++){
+                if(array[indiceMin]>array[j])
+                    indiceMin = j;
             }
-
-        }while(scambio);
+            
+            scambioArray(array, i, indiceMin);
+        }
 
         for (int i : array) {
             System.out.print(i + " ");
@@ -51,5 +47,3 @@ public class BubbleSort {
         return v;
     }
 }
-
-

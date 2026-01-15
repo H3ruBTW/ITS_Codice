@@ -25,5 +25,7 @@ public class ES6 {
 
         System.out.println("Il numero " + Numt + " è stato trovato n° " + NVol + " volte");
 
+        scanner.close();
+
     }
 }
