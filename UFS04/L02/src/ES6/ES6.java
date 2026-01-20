@@ -8,7 +8,7 @@ public class ES6 {
 
         System.out.println("Scrivi una parola e controllerò se è palindroma\n");
 
-        String parola = scanner.nextLine().toLowerCase();
+        String parola = scanner.nextLine().toLowerCase().replaceAll(" ", "");
         String subString1, subString2;
         boolean pal = true;
 
