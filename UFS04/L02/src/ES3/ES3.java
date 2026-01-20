@@ -23,6 +23,6 @@ public class ES3 {
             ris += it.next();
         }
 
-        System.out.println("Risulato: " + (ris/arrayList.size()));
+        System.out.println("Risultato: " + (ris/arrayList.size()));
     }
 }
