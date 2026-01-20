@@ -8,13 +8,18 @@ public class ES4 {
         Integer n;
 
         do{
-            System.out.print("Scrivi un numero e ti dirò se è pari o dispari (scrivi 0 per uscire): ");
-            n = scanner.nextInt();
+            System.out.print("\nScrivi un numero e ti dirò se è pari o dispari (scrivi 0 per uscire): ");
+            if((n = scanner.nextInt()) == 0)
+                break;
 
             if(n%2 == 0 && n!=0)
-                System.out.println("Pari");
-            else if(n%2 == 1)
-                System.out.println("Dispari");
+                System.out.println("\nPari");
+            else
+                System.out.println("\nDispari");
         } while (n!=0);
+
+        System.out.println("\nGrazie e arrivederci!");
+
+        scanner.close();
     }
 }
