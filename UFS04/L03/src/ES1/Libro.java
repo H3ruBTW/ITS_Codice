@@ -63,7 +63,7 @@ public class Libro {
     }
 
     public Boolean isVintage(){
-       return EtaLibro()>=50;
+        return EtaLibro()>=50;
     }
 
     public void Lunghezza(){
