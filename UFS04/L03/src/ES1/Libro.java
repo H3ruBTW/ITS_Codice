@@ -54,7 +54,8 @@ public class Libro {
     }
 
     public double VPP(){
-        return (double)NPag/Prezzo;
+        //VPP con solo due decimali
+        return Math.floor(Prezzo/(double)NPag*100)/100;
     }
 
     public Integer EtaLibro(){
