@@ -41,8 +41,8 @@ public class Libro {
         return Prezzo;
     }
 
-    public void setPrezzo(double prezzo) {
-        Prezzo = prezzo;
+    public void setPrezzo(double Prezzo) {
+        this.Prezzo = Prezzo;
     }
 
     public Libro(String Autore, String Titolo, Integer NPag, double Prezzo, Integer AnnoP){
