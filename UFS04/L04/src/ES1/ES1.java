@@ -7,7 +7,9 @@ public class ES1 {
         Lavoratore lavoratore = new Lavoratore("Francesco", "Carella", "Non sono nato", 5);
 
         persona.presentati();
+        System.out.println();
         studente.presentati();
+        System.out.println();
         lavoratore.presentati();
     }
 }
