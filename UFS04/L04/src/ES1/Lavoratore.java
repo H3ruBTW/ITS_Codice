@@ -10,6 +10,7 @@ public class Lavoratore extends Persona {
 
     @Override
     public void presentati(){
-        System.out.println("Ciao, Mi chiamo " + Nome + " " + Cognome + "\nSono nato il " + DataDN + "\nIl mio Salario è di " + Salario + "€ al mese");
+        super.presentati();
+        System.out.println("Il mio Salario è di " + Salario + "€ al mese");
     }
 }
