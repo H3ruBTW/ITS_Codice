@@ -87,7 +87,7 @@ public class Biblioteca {
         for (Libro libro : Libri) {
             String titLib = libro.getTitolo().toLowerCase().replaceAll(" ", "");
             
-            if(titLib.startsWith(Titolo) && !libro.getInPrestito()){
+            if(titLib.contains(Titolo) && !libro.getInPrestito()){
                 FiltroLibri.add(libro);
             }
         }
