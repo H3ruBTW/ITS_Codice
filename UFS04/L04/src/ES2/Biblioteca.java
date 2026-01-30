@@ -2,7 +2,6 @@ package ES2;
 
 import java.util.ArrayList;
 
-//AGGIUNTA LIBRI, PRESTITO LIBRI, RESTITUZIONE DAL PRESTITO, CERCA LIBRO
 public class Biblioteca {
     private ArrayList<Libro> Libri = new ArrayList<>();
     private String Nome;
