@@ -81,12 +81,10 @@ public class Libro {
     }
 
     public double valoreReale(){
-        Integer età = EtaLibro();
         double NuovoValore = Prezzo;
 
-        while (età >= 10) {
+        for(Integer età = EtaLibro(); età>=10; età-=10){
             NuovoValore *= 0.8;
-            età -= 10;
         }
 
         return Math.floor(NuovoValore*100)/100;
