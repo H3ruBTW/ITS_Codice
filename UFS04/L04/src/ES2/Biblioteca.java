@@ -100,12 +100,12 @@ public class Biblioteca {
             System.out.println("Nessun libro trovato.");
         } else {
             for (Libro libro : FiltroLibri) {
-                System.out.println("ISBN:   " + libro.getISBN());
-                System.out.println("Titolo: " + libro.getTitolo());
-                System.out.println("Autore: " + libro.getAutore());
+                System.out.println("ISBN:            " + libro.getISBN());
+                System.out.println("Titolo:          " + libro.getTitolo());
+                System.out.println("Autore:          " + libro.getAutore());
                 System.out.println("Quantità totale: " + libro.getQuantitaTotale());
-                System.out.println("In prestito: " + libro.getQuantitaInPrestito());
-                System.out.println("Disponibili: " + libro.getQuantitaDisponibile());
+                System.out.println("In prestito:     " + libro.getQuantitaInPrestito());
+                System.out.println("Disponibili:     " + libro.getQuantitaDisponibile());
                 System.out.println("----------------------------------------------------");
             }
         }
