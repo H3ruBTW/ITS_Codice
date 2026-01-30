@@ -14,61 +14,63 @@ public class Biblioteca {
         Nome = nome;
     }
 
-    public Biblioteca(String Nome){this.Nome = Nome;}
+    public Biblioteca(String Nome){
+        this.Nome = Nome;
+    }
 
-    public void aggiungiLibro(String ISBN, String Titolo, String Autore){
-        if(findISBN(ISBN) == -1){
-            Libri.add(new Libro(ISBN, Titolo, Autore));
+    public void aggiungiLibro(String ISBN, String Titolo, String Autore, int quantita){
+        if (quantita <= 0) {
+            System.out.println("Quantità non valida");
+            return;
+        }
+
+        int index = findISBN(ISBN);
+        if(index == -1){
+            Libri.add(new Libro(ISBN, Titolo, Autore, quantita));
         } else {
-            System.out.println("Niente duplicati");
+            Libro esistente = Libri.get(index);
+            esistente.setQuantitaTotale(esistente.getQuantitaTotale() + quantita);
+            System.out.println("Aggiunte " + quantita + " copie a un libro esistente");
         }
     }
 
     public void prestito(String ISBN){
-        if(Libri.size()!=0 && !checkAllPrestito()){
-            int indLibro;
-            if((indLibro = findISBN(ISBN)) != -1){
-                if(!Libri.get(indLibro).getInPrestito()){
-                    Libri.get(indLibro).setInPrestito(true);
+        if(Libri.size() != 0){
+            int indLibro = findISBN(ISBN);
+            if(indLibro != -1){
+                Libro libro = Libri.get(indLibro);
+                if(libro.getQuantitaDisponibile() > 0){
+                    libro.setQuantitaInPrestito(libro.getQuantitaInPrestito() + 1);
                     System.out.println("Libro mandato in prestito");
                 } else {
-                    System.out.println("Il libro è già in prestito");
+                    System.out.println("Non ci sono copie disponibili per il prestito");
                 }
             } else {
                 System.out.println("Nessun libro trovato");
             }
         } else {
-            System.out.println("Tutti i libri sono stati presi");
+            System.out.println("Non ci sono libri in libreria");
         }
     }
 
     public int findISBN(String ISBN){
-        for(int i=0; i<Libri.size(); i++){
+        for(int i = 0; i < Libri.size(); i++){
             if(Libri.get(i).getISBN().equals(ISBN))
                 return i;
         }
-
         return -1;
-    }
-
-    public Boolean checkAllPrestito(){
-        for (Libro libro : Libri) {
-            if(libro.getInPrestito() == false)
-                return false;
-        }
-
-        return true;
     }
 
     public void restituzione(String ISBN){
         if(Libri.size() != 0){
-            int indLibro;
-            if((indLibro = findISBN(ISBN)) != -1){
-                if(Libri.get(indLibro).getInPrestito()){
-                    Libri.get(indLibro).setInPrestito(false);
+            int indLibro = findISBN(ISBN);
+            if(indLibro != -1){
+                Libro libro = Libri.get(indLibro);
+                if(libro.getQuantitaInPrestito() > 0){
+                    libro.setQuantitaInPrestito(libro.getQuantitaInPrestito() - 1);
                     System.out.println("Libro restituito");
                 } else {
-                    System.out.println("Il libro non era in prestito in questa biblioteca");
+                    System.out.println("Nessuna copia di questo libro risulta in prestito");
                 }
             } else {
                 System.out.println("Hai sbagliato biblioteca");
@@ -85,22 +87,25 @@ public class Biblioteca {
 
         for (Libro libro : Libri) {
             String titLib = libro.getTitolo().toLowerCase().replaceAll(" ", "");
-            
-            if(titLib.contains(Titolo) && !libro.getInPrestito()){
+            if(titLib.contains(Titolo) && libro.getQuantitaDisponibile() > 0){
                 FiltroLibri.add(libro);
             }
         }
+
         System.out.println("----------------------------------------------------");
         System.out.println("Libri trovati disponibili");
         System.out.println("----------------------------------------------------");
 
-         if (FiltroLibri.isEmpty()) {
+        if (FiltroLibri.isEmpty()) {
             System.out.println("Nessun libro trovato.");
         } else {
             for (Libro libro : FiltroLibri) {
                 System.out.println("ISBN:   " + libro.getISBN());
                 System.out.println("Titolo: " + libro.getTitolo());
                 System.out.println("Autore: " + libro.getAutore());
+                System.out.println("Quantità totale: " + libro.getQuantitaTotale());
+                System.out.println("In prestito: " + libro.getQuantitaInPrestito());
+                System.out.println("Disponibili: " + libro.getQuantitaDisponibile());
                 System.out.println("----------------------------------------------------");
             }
         }

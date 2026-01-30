@@ -5,30 +5,25 @@ import java.util.Scanner;
 public class ES2 {
     public static void main(String[] args) {
         Scanner in = new Scanner(System.in);
-
-        // Crea biblioteca e aggiungi qualche libro reale
         Biblioteca biblio = new Biblioteca("Biblioteca Centrale");
-        biblio.aggiungiLibro("9788804668239", "It", "Stephen King");              // [web:14]
-        biblio.aggiungiLibro("9788804736068", "Il nome della rosa", "Umberto Eco"); // [web:14]
-        biblio.aggiungiLibro("9788804668230", "1984", "George Orwell");           // [web:14]
-        biblio.aggiungiLibro("9788804668231", "Il Signore degli Anelli", "J.R.R. Tolkien"); // [web:14]
+
+        // Libri di esempio
+        biblio.aggiungiLibro("9788804668239", "It", "Stephen King", 5);
+        biblio.aggiungiLibro("9788804736068", "Il nome della rosa", "Umberto Eco", 3);
+        biblio.aggiungiLibro("9788804668230", "1984", "George Orwell", 2);
+        biblio.aggiungiLibro("9788804668231", "Il Signore degli Anelli", "J.R.R. Tolkien", 4);
 
         int scelta;
         do {
-            System.out.println("===== MENU BIBLIOTECA =====");
-            System.out.println("1) Aggiungi libro");
+            System.out.println("\n===== MENU BIBLIOTECA " + biblio.getNome() + " =====");
+            System.out.println("1) Aggiungi libro (con quantità)");
             System.out.println("2) Metti in prestito un libro");
             System.out.println("3) Restituisci un libro");
-            System.out.println("4) Cerca libro per titolo");
+            System.out.println("4) Cerca libro per titolo (vuoto = tutti)");
             System.out.println("0) Esci");
             System.out.print("Scelta: ");
 
-            while (!in.hasNextInt()) {
-                System.out.print("Inserisci un numero valido: ");
-                in.next();
-            }
-            scelta = in.nextInt();
-            in.nextLine(); // consuma il newline
+            scelta = getIntInput(in);
 
             switch (scelta) {
                 case 1:
@@ -38,40 +33,46 @@ public class ES2 {
                     String titoloAdd = in.nextLine();
                     System.out.print("Autore: ");
                     String autoreAdd = in.nextLine();
-                    biblio.aggiungiLibro(isbnAdd, titoloAdd, autoreAdd);
+                    System.out.print("Quantità: ");
+                    int quantitaAdd = getIntInput(in);
+                    biblio.aggiungiLibro(isbnAdd, titoloAdd, autoreAdd, quantitaAdd);
                     break;
 
                 case 2:
-                    System.out.print("ISBN del libro da mettere in prestito: ");
-                    String isbnPrestito = in.nextLine();
-                    biblio.prestito(isbnPrestito);
+                    System.out.print("ISBN da prestare: ");
+                    biblio.prestito(in.nextLine());
                     break;
 
                 case 3:
-                    System.out.print("ISBN del libro da restituire: ");
-                    String isbnRest = in.nextLine();
-                    biblio.restituzione(isbnRest);
+                    System.out.print("ISBN da restituire: ");
+                    biblio.restituzione(in.nextLine());
                     break;
 
                 case 4:
-                    System.out.print("Titolo (o inizio titolo) da cercare: ");
-                    String titoloRicerca = in.nextLine();
-                    biblio.ricerca(titoloRicerca);
+                    System.out.print("Titolo (Enter per tutti): ");
+                    String ricerca = in.nextLine();
+                    biblio.ricerca(ricerca);
                     break;
 
                 case 0:
-                    System.out.println("Uscita dal programma...");
+                    System.out.println("Arrivederci!");
                     break;
 
                 default:
                     System.out.println("Scelta non valida.");
-                    break;
             }
-
-            System.out.println();
-
         } while (scelta != 0);
 
         in.close();
+    }
+
+    private static int getIntInput(Scanner in) {
+        while (!in.hasNextInt()) {
+            System.out.print("Numero valido: ");
+            in.next();
+        }
+        int valore = in.nextInt();
+        in.nextLine();
+        return valore;
     }
 }
