@@ -79,4 +79,16 @@ public class Libro {
         //Sconto con solo due decimali
         return Math.floor(Prezzo*((100-sconto)/100)*100)/100;
     }
+
+    public double valoreReale(){
+        Integer età = EtaLibro();
+        double NuovoValore = Prezzo;
+
+        while (età >= 10) {
+            NuovoValore *= 0.8;
+            età -= 10;
+        }
+
+        return Math.floor(NuovoValore*100)/100;
+    }
 }

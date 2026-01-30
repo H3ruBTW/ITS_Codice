@@ -8,6 +8,7 @@ public class ES1 {
         System.out.println("Età: " + libro1.EtaLibro());
         System.out.println("Vintage?: " + (libro1.isVintage() ? "Si" : "No"));
         System.out.println("Con sconto: " + libro1.Sconto(25.0) + "€");
+        System.out.println("Valore Reale: " + libro1.valoreReale() + "€");
         libro1.Lunghezza();
     }
 }
