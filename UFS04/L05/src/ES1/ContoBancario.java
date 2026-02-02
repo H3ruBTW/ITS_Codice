@@ -196,7 +196,7 @@ public class ContoBancario {
         try {
             return LocalDate.parse(data, dtf).atStartOfDay();
         } catch (Exception e) {
-            throw new IllegalArgumentException("Formato data errato (gg/MM/aaaa)");
+            throw new IllegalArgumentException("Formato data errato (dd/MM/yyyy)");
         }
     }
 }
