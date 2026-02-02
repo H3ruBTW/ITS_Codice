@@ -1,6 +1,8 @@
 package ES1;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 public class ContoBancario {
@@ -22,7 +24,7 @@ public class ContoBancario {
         
         if(soldiPrelievo <= soldi){
             soldi -= soldiPrelievo;
-            Transazioni.add(new Transazione("Prelievo", descrizione, soldiPrelievo, LocalDateTime.now().withNano(0).toString()));
+            Transazioni.add(new Transazione("Prelievo", descrizione, soldiPrelievo, LocalDateTime.now().withNano(0)));
         } else {
             throw new IllegalArgumentException("Saldo non disponibile per questa operazione");
         }
@@ -32,7 +34,7 @@ public class ContoBancario {
         
         if(soldiDeposito > 0){
             soldi += soldiDeposito;
-            Transazioni.add(new Transazione("Deposito", descrizione, soldiDeposito, LocalDateTime.now().withNano(0).toString()));
+            Transazioni.add(new Transazione("Deposito", descrizione, soldiDeposito, LocalDateTime.now().withNano(0)));
         } else {
             throw new IllegalArgumentException("Importo inferiore a 0€");
         }
@@ -42,7 +44,7 @@ public class ContoBancario {
         
         if(soldiPagamento <= soldi * 0.25){
             soldi -= soldiPagamento;
-            Transazioni.add(new Transazione("Pagamento", descrizione, soldiPagamento, LocalDateTime.now().withNano(0).toString()));
+            Transazioni.add(new Transazione("Pagamento", descrizione, soldiPagamento, LocalDateTime.now().withNano(0)));
         } else {
             throw new IllegalArgumentException("Pagamento non riuscito, richiesta superiore a 25% dei soldi sul conto");
         }
@@ -112,5 +114,89 @@ public class ContoBancario {
             System.out.println("Nessuna transazione trovata sul tuo account");
         }
         
+    }
+
+    public void printTransazioniByDate(String dataInizio, String dataFine){
+        LocalDateTime inizio, fine;
+        int ripetizioni = 0;
+        System.out.println("Transizioni sul tuo conto");
+        if(!Transazioni.isEmpty()){
+            if(!dataInizio.equals("0")){
+                inizio = trovaData(dataInizio);
+                if(!dataFine.equals("0")){
+                    System.out.println("Dalla data " + dataInizio + " a " + dataFine);
+                    System.out.println("-----------------------------------------------------");
+                    fine = trovaData(dataFine);
+                    for (Transazione transazione : Transazioni) {
+                        LocalDateTime data = transazione.getData();
+                        if(data.isAfter(inizio) && data.isBefore(fine)){
+                            System.out.println("Tipologia: " + transazione.getTipologia());
+                            System.out.println("Fatta in data: " + transazione.getData());
+                            System.out.println("Descrizione: " + transazione.getDescrizione());
+                            System.out.println("Quantitativo di soldi: " + transazione.getQuantitaSoldi());
+                            System.out.println("-----------------------------------------------------");
+                            ripetizioni++;
+                        }
+                    }
+
+                    if(ripetizioni == 0)
+                        System.out.println("Nessuna transazione trovata con questo filtro");
+                } else {
+                    System.out.println("Dalla data " + dataInizio);
+                    System.out.println("-----------------------------------------------------");
+
+                    for (Transazione transazione : Transazioni) {
+                        LocalDateTime data = transazione.getData();
+                        if(data.isAfter(inizio)){
+                            System.out.println("Tipologia: " + transazione.getTipologia());
+                            System.out.println("Fatta in data: " + transazione.getData());
+                            System.out.println("Descrizione: " + transazione.getDescrizione());
+                            System.out.println("Quantitativo di soldi: " + transazione.getQuantitaSoldi());
+                            System.out.println("-----------------------------------------------------");
+                            ripetizioni++;
+                        }
+                    }
+
+                    if(ripetizioni == 0)
+                        System.out.println("Nessuna transazione trovata con questo filtro");
+                }
+
+            } else {
+                if(!dataFine.equals("0")){
+                    System.out.println("Fino a " + dataFine);
+                    System.out.println("-----------------------------------------------------");
+                    fine = trovaData(dataFine);
+
+                    for (Transazione transazione : Transazioni) {
+                        LocalDateTime data = transazione.getData();
+                        if(data.isBefore(fine)){
+                            System.out.println("Tipologia: " + transazione.getTipologia());
+                            System.out.println("Fatta in data: " + transazione.getData());
+                            System.out.println("Descrizione: " + transazione.getDescrizione());
+                            System.out.println("Quantitativo di soldi: " + transazione.getQuantitaSoldi());
+                            System.out.println("-----------------------------------------------------");
+                            ripetizioni++;
+                        }
+                    }
+
+                    if(ripetizioni == 0)
+                        System.out.println("Nessuna transazione trovata con questo filtro");
+                } else {
+                    throw new IllegalArgumentException("Nessuna data inserita");
+                }
+            }
+        } else {
+            System.out.println("Nessuna transazione sul tuo conto");
+        }
+        
+    }
+
+    private LocalDateTime trovaData(String data){
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        try {
+            return LocalDate.parse(data, dtf).atStartOfDay();
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Formato data errato (gg/MM/aaaa)");
+        }
     }
 }

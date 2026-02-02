@@ -1,8 +1,11 @@
 package ES1;
 
+import java.time.LocalDateTime;
+
 public class Transazione  {
-    private String tipologia, descrizione, data;
+    private String tipologia, descrizione;
     private double quantitaSoldi;
+    private LocalDateTime data;
 
     public String getTipologia() {
         return tipologia;
@@ -30,11 +33,11 @@ public class Transazione  {
             throw new IllegalArgumentException("Descrizione mancante");
     }
 
-    public String getData() {
+    public LocalDateTime getData() {
         return data;
     }
 
-    public void setData(String data) {
+    public void setData(LocalDateTime data) {
         this.data = data;
     }
 
@@ -49,7 +52,7 @@ public class Transazione  {
             throw new IllegalArgumentException("Soldi in negativo");
     }
 
-    public Transazione(String tipologia, String descrizione, double quantitaSoldi, String data) {
+    public Transazione(String tipologia, String descrizione, double quantitaSoldi, LocalDateTime data) {
         switch (tipologia) {
             case "Pagamento", "Prelievo", "Deposito":
                 this.tipologia = tipologia;
