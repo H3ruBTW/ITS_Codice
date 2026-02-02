@@ -50,6 +50,10 @@ public class ContoBancario {
         }
     }
 
+    public ArrayList<Transazione> getTransazione(){
+        return Transazioni;
+    }
+
     public void printTransazioni(String filtro){
         System.out.println("Transizioni sul tuo conto");
         if(!filtro.equals("Nessuno"))
@@ -91,14 +95,14 @@ public class ContoBancario {
 
     public void printTransazioniByDesc(String descrizione){
         //Il replace all toglie i doppi spazi
-        descrizione = descrizione.toLowerCase().replaceAll("\\s+", " ");
+        descrizione = descrizione.toLowerCase().replaceAll(" ", "");
         System.out.println("Transizioni sul tuo conto");
         System.out.println("...che contegono la descrizione: " + descrizione);
         System.out.println("-----------------------------------------------------");
         if(!Transazioni.isEmpty()){
             int ripetizioni = 0;
             for (Transazione transazione : Transazioni) {
-                if(transazione.getDescrizione().toLowerCase().replaceAll("\\s+", " ").contains(descrizione)){
+                if(transazione.getDescrizione().toLowerCase().replaceAll(" ", "").contains(descrizione)){
                     System.out.println("Tipologia: " + transazione.getTipologia());
                     System.out.println("Fatta in data: " + transazione.getData());
                     System.out.println("Descrizione: " + transazione.getDescrizione());
