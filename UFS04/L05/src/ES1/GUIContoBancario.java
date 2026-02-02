@@ -6,13 +6,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.time.LocalDateTime;
 import java.text.DecimalFormat;
 
 public class GUIContoBancario extends JFrame {
     private ContoBancario conto;
     private DecimalFormat df = new DecimalFormat("€#,##0.00");
     
-    // GUI Components
     private JLabel lblSaldo;
     private JTextField txtImporto, txtDescrizione;
     private JTextArea txtOutput;
@@ -27,54 +27,59 @@ public class GUIContoBancario extends JFrame {
     }
     
     private void initGUI() {
-        setTitle("🏦 Conto Bancario GUI");
+        setTitle("🏦 Conto Bancario");
         setSize(900, 700);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
+        setLayout(new BorderLayout());
         
-        // Layout principale
-        setLayout(new BorderLayout(10, 10));
-        
-        // 1. SALDO
-        JPanel pnlSaldo = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        // Saldo
         lblSaldo = new JLabel("Saldo: " + df.format(conto.getSoldi()));
         lblSaldo.setFont(new Font("Arial", Font.BOLD, 24));
-        lblSaldo.setForeground(Color.BLUE);
-        pnlSaldo.add(lblSaldo);
-        add(pnlSaldo, BorderLayout.NORTH);
+        lblSaldo.setHorizontalAlignment(JLabel.CENTER);
+        lblSaldo.setOpaque(true);
+        lblSaldo.setBackground(Color.CYAN);
+        lblSaldo.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        add(lblSaldo, BorderLayout.NORTH);
         
-        // 2. OPERAZIONI
+        // Operazioni + Output
+        JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+        
+        // Sinistra: Operazioni
         JPanel pnlOps = createOperazioniPanel();
-        add(pnlOps, BorderLayout.WEST);
+        split.setLeftComponent(pnlOps);
         
-        // 3. OUTPUT (principale)
-        txtOutput = new JTextArea(20, 40);
+        // Destra: Output
+        txtOutput = new JTextArea(25, 35);
         txtOutput.setFont(new Font("Monospaced", Font.PLAIN, 12));
         txtOutput.setEditable(false);
-        add(new JScrollPane(txtOutput), BorderLayout.CENTER);
+        txtOutput.setBorder(BorderFactory.createTitledBorder("📋 Log Transazioni"));
+        split.setRightComponent(new JScrollPane(txtOutput));
         
-        // 4. Filtri
-        JPanel pnlFiltri = createFiltriPanel();
-        add(pnlFiltri, BorderLayout.SOUTH);
+        add(split, BorderLayout.CENTER);
         
+        // Filtri
+        add(createFiltriPanel(), BorderLayout.SOUTH);
+        
+        split.setDividerLocation(300);
         setVisible(true);
     }
     
     private JPanel createOperazioniPanel() {
-        JPanel pnl = new JPanel(new GridLayout(8, 1, 10, 10));
+        JPanel pnl = new JPanel(new GridLayout(7, 1, 10, 10));
         pnl.setBorder(BorderFactory.createTitledBorder("💳 Operazioni"));
-        pnl.setPreferredSize(new Dimension(250, 500));
+        pnl.setBackground(Color.WHITE);
         
-        // Campi input
+        // Campi
         pnl.add(new JLabel("Importo:", JLabel.CENTER));
         txtImporto = new JTextField("100.00");
         pnl.add(txtImporto);
         
         pnl.add(new JLabel("Descrizione:", JLabel.CENTER));
-        txtDescrizione = new JTextField("Operazione GUI");
+        txtDescrizione = new JTextField("Test GUI");
         pnl.add(txtDescrizione);
         
-        // Bottoni operazioni
+        // Bottoni SEPARATI (no switch problematico!)
         btnDeposito = new JButton("✅ DEPOSITO");
         btnPrelievo = new JButton("💳 PRELIEVO");
         btnPagamento = new JButton("💰 PAGAMENTO");
@@ -82,98 +87,116 @@ public class GUIContoBancario extends JFrame {
         btnDeposito.setBackground(Color.GREEN);
         btnPrelievo.setBackground(Color.ORANGE);
         btnPagamento.setBackground(Color.RED);
-        
-        btnDeposito.setFont(new Font("Arial", Font.BOLD, 12));
-        btnPrelievo.setFont(new Font("Arial", Font.BOLD, 12));
-        btnPagamento.setFont(new Font("Arial", Font.BOLD, 12));
+        btnDeposito.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 14));
+        btnPrelievo.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 14));
+        btnPagamento.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 14));
         
         pnl.add(btnDeposito);
         pnl.add(btnPrelievo);
         pnl.add(btnPagamento);
         
-        // Listener operazioni
-        ActionListener opListener = e -> {
-            try {
-                double importo = Double.parseDouble(txtImporto.getText());
-                String desc = txtDescrizione.getText();
-                
-                if (e.getSource() == btnDeposito) conto.doDeposito(importo, desc);
-                else if (e.getSource() == btnPrelievo) conto.doPrelievo(importo, desc);
-                else conto.doPagamento(importo, desc);
-                
-                aggiornaSaldo();
-                JOptionPane.showMessageDialog(this, "✅ Operazione OK!\nSaldo: " + df.format(conto.getSoldi()));
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, "❌ " + ex.getMessage());
-            }
-        };
-        
-        btnDeposito.addActionListener(opListener);
-        btnPrelievo.addActionListener(opListener);
-        btnPagamento.addActionListener(opListener);
+        // ⭐ LISTENER SEPARATI (semplice e sicuro)
+        btnDeposito.addActionListener(e -> eseguiDeposito());
+        btnPrelievo.addActionListener(e -> eseguiPrelievo());
+        btnPagamento.addActionListener(e -> eseguiPagamento());
         
         return pnl;
+    }
+    
+    // ⭐ METODI SEPARATI (no ActionEvent cast!)
+    private void eseguiDeposito() {
+        eseguiOperazione("✅ DEPOSITO", "Deposito", () -> conto.doDeposito(importo(), descrizione()));
+    }
+    
+    private void eseguiPrelievo() {
+        eseguiOperazione("💳 PRELIEVO", "Prelievo", () -> conto.doPrelievo(importo(), descrizione()));
+    }
+    
+    private void eseguiPagamento() {
+        eseguiOperazione("💰 PAGAMENTO", "Pagamento", () -> conto.doPagamento(importo(), descrizione()));
+    }
+    
+    private double importo() {
+        return Double.parseDouble(txtImporto.getText().replace(",", "."));
+    }
+    
+    private String descrizione() {
+        return txtDescrizione.getText();
+    }
+    
+    // ⭐ METODO CENTRALE CON CONFERMA VISIVA
+    private void eseguiOperazione(String emoji, String tipoOp, Runnable operazione) {
+        try {
+            operazione.run();
+            
+            // 🔥 MOSTRA CONFERMA
+            String conferma = String.format("""
+                    %s OPERAZIONE COMPLETATA!
+                    ╔══════════════════════════════════════╗
+                    ║ Tipo:          %s
+                    ║ Data:          %s
+                    ║ Descrizione:   %s
+                    ║ Importo:       %s
+                    ║ NUOVO SALDO:   %s
+                    ╚══════════════════════════════════════╝
+                    """, 
+                emoji, tipoOp, LocalDateTime.now().withNano(0), 
+                descrizione(), df.format(importo()), df.format(conto.getSoldi()));
+            
+            txtOutput.insert(conferma + "\n\n", 0);
+            txtOutput.setCaretPosition(0);
+            
+            aggiornaSaldo();
+            Toolkit.getDefaultToolkit().beep();  // Suono!
+            
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "❌ " + ex.getMessage());
+        }
     }
     
     private JPanel createFiltriPanel() {
-        JPanel pnl = new JPanel(new GridLayout(1, 4));
-        pnl.setBorder(BorderFactory.createTitledBorder("🔍 Visualizza Transazioni"));
+        JPanel pnl = new JPanel(new FlowLayout());
+        pnl.setBorder(BorderFactory.createTitledBorder("🔍 Filtri"));
         
-        // Filtro tipo
         cmbTipo = new JComboBox<>(new String[]{"Tutte", "Prelievo", "Deposito", "Pagamento"});
         btnTutte = new JButton("📋 Tutte");
-        btnFiltroTipo = new JButton("🔎 Per Tipo");
+        btnFiltroTipo = new JButton("🔎 Tipo");
+        txtFiltroDesc = new JTextField(12);
+        btnFiltroDesc = new JButton("🔍 Descr.");
+        
         pnl.add(cmbTipo);
         pnl.add(btnTutte);
         pnl.add(btnFiltroTipo);
-        
-        // Filtro descrizione
-        txtFiltroDesc = new JTextField("test", 8);
-        btnFiltroDesc = new JButton("🔍 Per Descrizione");
         pnl.add(txtFiltroDesc);
         pnl.add(btnFiltroDesc);
         
-        // Listener filtri
         btnTutte.addActionListener(e -> printTutte("Nessuno"));
-        btnFiltroTipo.addActionListener(e -> {
-            String tipo = (String) cmbTipo.getSelectedItem();
-            printTutte(tipo.equals("Tutte") ? "Nessuno" : tipo);
-        });
-        btnFiltroDesc.addActionListener(e -> {
-            String desc = txtFiltroDesc.getText();
-            printPerDescrizione(desc);
-        });
+        btnFiltroTipo.addActionListener(e -> printTutte((String)cmbTipo.getSelectedItem()));
+        btnFiltroDesc.addActionListener(e -> printPerDescrizione(txtFiltroDesc.getText()));
         
         return pnl;
     }
     
-    // MAGIC: Cattura System.out dei tuoi metodi!
-    private String catturaOutput(Runnable action) {
-        PrintStream originalOut = System.out;
+    private String catturaOutput(Runnable r) {
+        PrintStream orig = System.out;
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        PrintStream ps = new PrintStream(baos);
-        System.setOut(ps);
-        
-        action.run();
-        
-        System.setOut(originalOut);
+        System.setOut(new PrintStream(baos));
+        r.run();
+        System.setOut(orig);
         return baos.toString();
     }
     
     private void printTutte(String filtro) {
-        String output = catturaOutput(() -> conto.printTransazioni(filtro));
-        txtOutput.setText(output);
-        txtOutput.setCaretPosition(0);
+        txtOutput.setText(catturaOutput(() -> conto.printTransazioni(filtro)));
     }
     
     private void printPerDescrizione(String desc) {
-        String output = catturaOutput(() -> conto.printTransazioniByDesc(desc));
-        txtOutput.setText(output);
-        txtOutput.setCaretPosition(0);
+        txtOutput.setText(catturaOutput(() -> conto.printTransazioniByDesc(desc)));
     }
     
     private void aggiornaSaldo() {
         lblSaldo.setText("Saldo: " + df.format(conto.getSoldi()));
+        setTitle("🏦 Conto - " + df.format(conto.getSoldi()));
     }
     
     public static void main(String[] args) {

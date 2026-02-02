@@ -22,7 +22,7 @@ public class ContoBancario {
         
         if(soldiPrelievo <= soldi){
             soldi -= soldiPrelievo;
-            Transazioni.add(new Transazione("Pagamento", descrizione, soldiPrelievo, LocalDateTime.now().withNano(0).toString()));
+            Transazioni.add(new Transazione("Prelievo", descrizione, soldiPrelievo, LocalDateTime.now().withNano(0).toString()));
         } else {
             throw new IllegalArgumentException("Saldo non disponibile per questa operazione");
         }
@@ -88,14 +88,14 @@ public class ContoBancario {
     }
 
     public void printTransazioniByDesc(String descrizione){
-        descrizione = descrizione.toLowerCase();
+        descrizione = descrizione.toLowerCase().replaceAll(" ", "");
         System.out.println("Transizioni sul tuo conto");
         System.out.println("...che contegono la descrizione: " + descrizione);
         System.out.println("-----------------------------------------------------");
-        if(Transazioni.isEmpty()){
+        if(!Transazioni.isEmpty()){
             int ripetizioni = 0;
             for (Transazione transazione : Transazioni) {
-                if(transazione.getDescrizione().toLowerCase().contains(descrizione)){
+                if(transazione.getDescrizione().toLowerCase().replaceAll(" ", "").contains(descrizione)){
                     System.out.println("Tipologia: " + transazione.getTipologia());
                     System.out.println("Fatta in data: " + transazione.getData());
                     System.out.println("Descrizione: " + transazione.getDescrizione());
