@@ -22,7 +22,7 @@ public class ContoBancario {
         
         if(soldiPrelievo <= soldi){
             soldi -= soldiPrelievo;
-            Transazioni.add(new Transazione("Pagamento", descrizione, soldiPrelievo, LocalDateTime.now().toString()));
+            Transazioni.add(new Transazione("Pagamento", descrizione, soldiPrelievo, LocalDateTime.now().withNano(0).toString()));
         } else {
             throw new IllegalArgumentException("Saldo non disponibile per questa operazione");
         }
@@ -32,7 +32,7 @@ public class ContoBancario {
         
         if(soldiDeposito > 0){
             soldi += soldiDeposito;
-            Transazioni.add(new Transazione("Deposito", descrizione, soldiDeposito, LocalDateTime.now().toString()));
+            Transazioni.add(new Transazione("Deposito", descrizione, soldiDeposito, LocalDateTime.now().withNano(0).toString()));
         } else {
             throw new IllegalArgumentException("Importo inferiore a 0€");
         }
@@ -42,7 +42,7 @@ public class ContoBancario {
         
         if(soldiPagamento <= soldi * 0.75){
             soldi -= soldiPagamento;
-            Transazioni.add(new Transazione("Pagamento", descrizione, soldiPagamento, LocalDateTime.now().toString()));
+            Transazioni.add(new Transazione("Pagamento", descrizione, soldiPagamento, LocalDateTime.now().withNano(0).toString()));
         } else {
             throw new IllegalArgumentException("Pagamento non riuscito, richiesta superiore a 25% dei soldi sul conto");
         }
