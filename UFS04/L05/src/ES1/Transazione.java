@@ -24,7 +24,10 @@ public class Transazione  {
     }
 
     public void setDescrizione(String descrizione) {
-        this.descrizione = descrizione;
+        if(descrizione != null)
+            this.descrizione = descrizione;
+        else
+            throw new IllegalArgumentException("Descrizione mancante");
     }
 
     public String getData() {
