@@ -1,6 +1,5 @@
 package ES1;
 
-import java.time.LocalDateTime;
 import java.util.Scanner;
 
 public class Main {
