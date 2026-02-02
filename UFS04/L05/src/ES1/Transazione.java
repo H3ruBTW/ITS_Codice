@@ -59,7 +59,10 @@ public class Transazione  {
                 throw new IllegalArgumentException("Tipologia errata di tipologia");
         }
 
-        this.descrizione = descrizione;
+        if(descrizione != null)
+            this.descrizione = descrizione;
+        else
+            throw new IllegalArgumentException("Descrizione mancante");
         
         if(quantitaSoldi>=0)
             this.quantitaSoldi = quantitaSoldi;
