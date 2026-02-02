@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/ITS_Codice.iml" filepath="$PROJECT_DIR$/.idea/ITS_Codice.iml" />
+      <module fileurl="file://$PROJECT_DIR$/UFS04/L01/L01.iml" filepath="$PROJECT_DIR$/UFS04/L01/L01.iml" />
+      <module fileurl="file://$PROJECT_DIR$/UFS04/L02/L02.iml" filepath="$PROJECT_DIR$/UFS04/L02/L02.iml" />
+      <module fileurl="file://$PROJECT_DIR$/UFS04/L03/L03.iml" filepath="$PROJECT_DIR$/UFS04/L03/L03.iml" />
+      <module fileurl="file://$PROJECT_DIR$/UFS04/L04/L04.iml" filepath="$PROJECT_DIR$/UFS04/L04/L04.iml" />
+      <module fileurl="file://$PROJECT_DIR$/UFS03/L05/L05.iml" filepath="$PROJECT_DIR$/UFS03/L05/L05.iml" />
+      <module fileurl="file://$PROJECT_DIR$/UFS03/L06/L06.iml" filepath="$PROJECT_DIR$/UFS03/L06/L06.iml" />
+      <module fileurl="file://$PROJECT_DIR$/UFS01/L09/L09/L09.iml" filepath="$PROJECT_DIR$/UFS01/L09/L09/L09.iml" />
+      <module fileurl="file://$PROJECT_DIR$/UFS01/L10/L10.iml" filepath="$PROJECT_DIR$/UFS01/L10/L10.iml" />
+      <module fileurl="file://$PROJECT_DIR$/UFS01/L09/Test/Test.iml" filepath="$PROJECT_DIR$/UFS01/L09/Test/Test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/UFS03/UFS03.iml" filepath="$PROJECT_DIR$/UFS03/UFS03.iml" />
+    </modules>
+  </component>
+</project>
