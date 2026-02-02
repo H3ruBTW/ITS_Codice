@@ -88,14 +88,15 @@ public class ContoBancario {
     }
 
     public void printTransazioniByDesc(String descrizione){
-        descrizione = descrizione.toLowerCase().replaceAll(" ", "");
+        //Il replace all toglie i doppi spazi
+        descrizione = descrizione.toLowerCase().replaceAll("\\s+", " ");
         System.out.println("Transizioni sul tuo conto");
         System.out.println("...che contegono la descrizione: " + descrizione);
         System.out.println("-----------------------------------------------------");
         if(!Transazioni.isEmpty()){
             int ripetizioni = 0;
             for (Transazione transazione : Transazioni) {
-                if(transazione.getDescrizione().toLowerCase().replaceAll(" ", "").contains(descrizione)){
+                if(transazione.getDescrizione().toLowerCase().replaceAll("\\s+", " ").contains(descrizione)){
                     System.out.println("Tipologia: " + transazione.getTipologia());
                     System.out.println("Fatta in data: " + transazione.getData());
                     System.out.println("Descrizione: " + transazione.getDescrizione());
