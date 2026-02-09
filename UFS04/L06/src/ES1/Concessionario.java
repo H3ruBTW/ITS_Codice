@@ -161,4 +161,30 @@ public class Concessionario {
 
         return fatturato;
     }
+
+    public double getFatturatoGiorni(int gg, int MM, int YYYY, int gg2, int MM2, int YYYY2){
+        double fatturato = 0;
+
+        LocalDate giorno = LocalDate.of(YYYY, MM, gg);
+        LocalDate giorno2 = LocalDate.of(YYYY2, MM2, gg2);
+        ZoneId fuso = ZoneId.of("Europe/Rome");
+
+        ZonedDateTime inizio = giorno.atStartOfDay(fuso);
+        ZonedDateTime fine = giorno2.atTime(LocalTime.MAX).atZone(fuso);
+
+        Iterator<Vendita> iterator = Vendite.iterator();
+
+        while (iterator.hasNext()) {
+            Vendita vendita = iterator.next();
+
+            if(vendita.getData().isAfter(inizio) && vendita.getData().isBefore(fine)){
+                if(vendita.getVeicolo() instanceof Auto a)
+                    fatturato += a.getPrezzo();
+                else if(vendita.getVeicolo() instanceof Moto m)
+                    fatturato += m.getPrezzo();
+            }
+        }
+
+        return fatturato;
+    }
 }
