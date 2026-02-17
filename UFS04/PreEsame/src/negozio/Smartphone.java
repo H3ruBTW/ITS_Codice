@@ -65,6 +65,6 @@ public class Smartphone extends Prodotto {
         return super.toString() + 
         "\nTipo Smartphone" +
         "\nOS " + os +
-        "Memoria in GB " + memoriaGB;
+        "\nMemoria in GB " + memoriaGB;
     }
 }
