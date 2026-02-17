@@ -2,6 +2,7 @@ package negozio;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class Negozio {
     private ArrayList<Prodotto> magazzino = new ArrayList<>();
@@ -11,7 +12,7 @@ public class Negozio {
         double prezzo, String os, short memoriaGB){
 
         for (Prodotto prodotto : magazzino) {
-            if(prodotto.getCodice() == codice){
+            if(prodotto.getCodice().equalsIgnoreCase(codice)){
                 System.out.println("Prodotto già esistente");
                 return;
             }
@@ -28,7 +29,7 @@ public class Negozio {
         double prezzo, String processore, String tipologia){
 
         for (Prodotto prodotto : magazzino) {
-            if(prodotto.getCodice() == codice){
+            if(prodotto.getCodice().equalsIgnoreCase(codice)){
                 System.out.println("Prodotto già esistente");
                 return;
             }
@@ -42,10 +43,15 @@ public class Negozio {
     }
 
     public void registraVendita(String codice, String metodo){
-        for (Prodotto prodotto : magazzino) {
-            if(prodotto.getCodice() == codice){
+
+        Iterator<Prodotto> i = magazzino.iterator();
+
+        while (i.hasNext()) {
+            Prodotto prodotto = i.next();
+            if(prodotto.getCodice().equalsIgnoreCase(codice)){
                 try {
                     vendite.add(new Vendita(prodotto, metodo));
+                    i.remove();
                 } catch (IllegalArgumentException e) {
                     System.out.println("Errore di aggiunta: " + e.getMessage());
                 }   
