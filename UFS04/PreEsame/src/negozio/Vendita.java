@@ -38,7 +38,7 @@ public class Vendita {
     @Override
     public String toString() {
         return "\nVendita" +
-        "\nProdotto " + prodotto +
+        "\n" + prodotto +
         "\nData " + dataVendita +
         "\nMetodo Pagamento " + metodoPagamento;
     }
