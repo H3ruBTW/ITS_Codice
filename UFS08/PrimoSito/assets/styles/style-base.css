@@ -1,0 +1,140 @@
+/* Stile CSS per la pagina index.html di UFS08 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Datatype", sans-serif;
+    overflow-x: hidden;
+}
+
+*::selection {
+    /* Highlight leggero */
+    background-color: rgba(80, 80, 80, 0.3);
+}
+
+/* Stile Header */
+header {
+    width: 100%;
+    padding: 30px;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    height: fit-content;
+    background: linear-gradient(90deg, rgb(80,80,80), rgb(40, 40, 40), rgb(40, 40, 40), rgb(40, 40, 40), rgb(80,80,80));
+    flex-direction: column;
+    color: white;
+}
+
+nav {
+    padding: 10px 20px;
+    width: fit-content;
+    flex-direction: row;
+    display: flex;
+    background-color: rgb(80,80,80);
+    border: 1px solid white;
+    border-radius: 10px;
+    justify-content: center;
+    align-items: center;
+    height: 50px;
+    transition: transform 0.2s ease-in-out;
+
+}
+
+nav:hover {
+    transform: translateY(-2px);
+}
+
+a {
+    text-decoration: none;
+    color: white;
+    transition: color 0.2s ease-in-out;
+}
+
+a:hover {
+    color: rgb(200, 200, 200);
+}
+
+a:active {
+    color: rgb(150, 150, 150);
+}
+
+ul {
+    display: flex;
+    flex-direction: row;
+    list-style-type: none;
+    gap: 25px;
+}
+
+/* Stile main */
+main {
+    width: 100%;
+    min-height: calc(100vh - 400px);
+    height: fit-content;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+}
+
+/* Stile Footer */
+footer {
+    width: 100%;
+    min-height: 200px;
+    height: fit-content;
+    background: linear-gradient(90deg, rgb(80,80,80), rgb(40, 40, 40), rgb(40, 40, 40), rgb(40, 40, 40), rgb(80,80,80));
+    display: flex;
+    text-align: center;
+    color: white;
+    padding: 20px;
+}
+
+@media (max-width: 650px) {
+    footer {
+        min-height: 400px;
+    }
+
+    footer div {
+        flex-direction: column !important;
+    }
+}
+
+footer div {
+    width: 100%;
+    justify-content: space-evenly;
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+}
+
+footer div div {
+    width: fit-content;
+}
+
+/* Stile Testo */
+h1 {
+    font-size: 40px;
+    font-weight: 600;
+}
+
+/* Divisori */
+#divisoreF {
+    width: 1px;
+    height: 100%;
+    background-color: white;
+}
+
+#divisoreH {
+    margin: 30px;
+    width: 95%;
+    height: 1px;
+    background-color: white;
+}
+
+@media (max-width: 650px) {
+    #divisoreF {
+        margin: 10px;
+        width: 95%;
+        height: 1px;
+    }
+}
