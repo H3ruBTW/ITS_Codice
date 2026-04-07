@@ -50,7 +50,7 @@ public class Biblioteca {
 
     public void restituzione(String ISBN, int ID){
         for (Prestito p : Prestiti) {
-            if(p.getLibro().getISBN() == ISBN && p.getUtente().getID() == ID)
+            if(p.getLibro().getISBN() == ISBN && p.getUtente().getID() == ID && p.getInPrestito())
                 if(p.getFine().isBefore(LocalDate.now()))
                     System.out.println("Consegnato in ritardo");
                 else
