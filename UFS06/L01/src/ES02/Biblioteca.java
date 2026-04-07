@@ -45,7 +45,20 @@ public class Biblioteca {
             return;
         }
 
-        Prestiti.add(new Prestito(l, u));
+        int count = 0;
+
+        for (Prestito p : Prestiti) {
+            if(p.getUtente() == u && p.getInPrestito())
+                count++;
+
+            if(p.getLibro() == l && p.getInPrestito())
+                return;
+        }
+
+        if(count >= 3)
+            System.out.println("Troppi prestiti");
+        else
+            Prestiti.add(new Prestito(l, u));
     }
 
     public void restituzione(String ISBN, int ID){
@@ -55,6 +68,14 @@ public class Biblioteca {
                     System.out.println("Consegnato in ritardo");
                 else
                     System.out.println("Consegnato nel giusto tempo");
+        }
+    }
+
+    public void printPrestiti(){
+        for (Prestito p : Prestiti) {
+            if(p.getInPrestito()){
+                //Scrive utente e libro con data di inizio e fine 
+            }
         }
     }
 }
