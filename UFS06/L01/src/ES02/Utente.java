@@ -7,11 +7,11 @@ public class Utente {
     private String nome, cognome;
     private LocalDate dataNascita;
 
-    public Utente(int ID, String nome, String cognome, LocalDate dataNascita){
+    public Utente(int ID, String nome, String cognome, int GG, int MM, int YYYY){
         this.ID = ID;
         setNome(nome);
         setCognome(cognome);
-        setDataNascita(dataNascita);
+        setDataNascita(GG, MM, YYYY);
     }
 
     public int getID() {
@@ -33,15 +33,25 @@ public class Utente {
     public void setNome(String nome) {
         if(!nome.isBlank())
             this.nome = nome;
+        else
+            throw new IllegalArgumentException("Nome non inserito");
     }
 
     public void setCognome(String cognome) {
         if(!cognome.isBlank())
             this.cognome = cognome;
+        else
+            throw new IllegalArgumentException("Cognome non inserito");
     }
 
-    public void setDataNascita(LocalDate dataNascita) {
-        this.dataNascita = dataNascita;
+    public void setDataNascita(int GG, int MM, int YYYY) {
+        try {
+            dataNascita = LocalDate.of(YYYY, MM, GG);
+            return;
+        } catch (Exception e) {}
+
+        throw new IllegalArgumentException("Data non formattabile");
+        
     }
 
     @Override
