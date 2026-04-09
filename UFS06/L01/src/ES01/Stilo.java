@@ -18,7 +18,7 @@ public class Stilo extends Scrive {
                     System.out.println("Pennarello scarico");
                     break;
                 } else {
-                    if((c = scrittura.charAt(i)) != ' ')
+                    if(c != ' ')
                         q_inchiostro -= CONSUMO;
                     char_scritti += c;
                 }
