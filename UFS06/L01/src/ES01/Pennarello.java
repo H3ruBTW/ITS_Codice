@@ -9,14 +9,15 @@ public class Pennarello extends Scrive {
         char c;
 
         for(int i=0; scrittura.length()>i; i++){
-            if((c = scrittura.charAt(i)) != ' ')
-                if(q_inchiostro - CONSUMO < 0){
-                    System.out.println("Pennarello scarico");
-                    break;
-                } else {
+            
+            if(q_inchiostro - CONSUMO < 0){
+                System.out.println("Pennarello scarico");
+                break;
+            } else {
+                if((c = scrittura.charAt(i)) != ' ')
                     q_inchiostro -= CONSUMO;
-                    char_scritti += c;
-                }
+                char_scritti += c;
+            }
         }
 
         System.out.println("Quello che si voleva scrivere: \n" + scrittura);

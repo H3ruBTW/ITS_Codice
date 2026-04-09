@@ -12,10 +12,11 @@ public class Penna extends Scrive {
         for(int i=0; scrittura.length()>i; i++){
             if((c = scrittura.charAt(i)) != ' ')
                 if(q_inchiostro - CONSUMO < 0){
-                    System.out.println("Penna scarica");
+                    System.out.println("Pennarello scarico");
                     break;
                 } else {
-                    q_inchiostro -= CONSUMO;
+                    if((c = scrittura.charAt(i)) != ' ')
+                        q_inchiostro -= CONSUMO;
                     char_scritti += c;
                 }
         }

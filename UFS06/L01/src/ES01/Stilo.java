@@ -9,16 +9,17 @@ public class Stilo extends Scrive {
     @Override
     public void scrive(String scrittura){
         String char_scritti = "";
-        HashSet<Character> char_non_cons = new HashSet<>(Arrays.asList(' ', '(', ')', '{', '}', '@', '[', ']'));
+        HashSet<Character> char_non_cons = new HashSet<>(Arrays.asList( '(', ')', '{', '}', '@', '[', ']'));
         char c;
 
         for(int i=0; scrittura.length()>i; i++){
             if(!char_non_cons.contains(c = scrittura.charAt(i)))
                 if(q_inchiostro - CONSUMO < 0){
-                    System.out.println("Stilo scarica");
+                    System.out.println("Pennarello scarico");
                     break;
                 } else {
-                    q_inchiostro -= CONSUMO;
+                    if((c = scrittura.charAt(i)) != ' ')
+                        q_inchiostro -= CONSUMO;
                     char_scritti += c;
                 }
         }
