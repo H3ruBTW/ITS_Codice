@@ -30,7 +30,7 @@ public class Libro {
 
     public void setISBN(String ISBN) throws IllegalArgumentException {
         
-        if(ISBN.length() == 13)
+        if(ISBN.matches("^\\d{13}$"))
             this.ISBN = ISBN;
         else
             throw new IllegalArgumentException("ISBN in formato errato");
