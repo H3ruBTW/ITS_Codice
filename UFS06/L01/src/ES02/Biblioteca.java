@@ -48,10 +48,10 @@ public class Biblioteca {
         int count = 0;
 
         for (Prestito p : Prestiti) {
-            if(p.getUtente() == u && p.getInPrestito())
+            if(p.getUtente().equals(u) && p.getInPrestito())
                 count++;
 
-            if(p.getLibro() == l && p.getInPrestito())
+            if(p.getLibro().equals(l) && p.getInPrestito())
                 return;
         }
 
@@ -63,19 +63,43 @@ public class Biblioteca {
 
     public void restituzione(String ISBN, int ID){
         for (Prestito p : Prestiti) {
-            if(p.getLibro().getISBN() == ISBN && p.getUtente().getID() == ID && p.getInPrestito())
+            if(p.getLibro().getISBN() == ISBN && p.getUtente().getID() == ID && p.getInPrestito()){
+                p.finisciPrestito();
+
                 if(p.getFine().isBefore(LocalDate.now()))
                     System.out.println("Consegnato in ritardo");
                 else
                     System.out.println("Consegnato nel giusto tempo");
+            }
         }
     }
 
     public void printPrestiti(){
         for (Prestito p : Prestiti) {
             if(p.getInPrestito()){
-                //Scrive utente e libro con data di inizio e fine 
+                System.out.println(p.toString());
             }
+        }
+    }
+
+    public void printPrestitiPersona(int ID){
+        Utente ut = null;
+
+        for(Utente u : Utenti){
+            if(u.getID() == ID){
+                ut = u;
+                break;
+            }
+        }
+
+        if(ut == null)
+            return;
+
+        for (Prestito p : Prestiti) {
+            if(p.getUtente().equals(ut)){
+                System.out.println(p.toString());   
+            }
+
         }
     }
 }

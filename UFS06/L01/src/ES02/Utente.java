@@ -43,4 +43,9 @@ public class Utente {
     public void setDataNascita(LocalDate dataNascita) {
         this.dataNascita = dataNascita;
     }
+
+    @Override
+    public String toString(){
+        return "{\nID: " + ID + "\nNome: " + nome + "\nCognome: " + cognome + "\nData di nascita: " + dataNascita + "\n}";
+    }
 }

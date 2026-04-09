@@ -38,4 +38,9 @@ public class Prestito {
     public void finisciPrestito() {
         inPrestito = false;
     }
+
+    @Override
+    public String toString(){
+        return "{\nLibro: " + libro.toString() + "\nUtente: " + utente.toString() + "\nData inizio: " + inizio + "\nData fine: " + fine + "\nPrestito attivo: " + inPrestito + "}";
+    }
 }

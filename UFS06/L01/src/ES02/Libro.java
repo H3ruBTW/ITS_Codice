@@ -36,6 +36,9 @@ public class Libro {
             this.nome = nome;
     }
 
-
+    @Override
+    public String toString(){
+        return "{\nISBN: " + ISBN + "\nTitolo: " + nome + "\nAutore: " + autore + "\n}";
+    }
 
 }
