@@ -2,6 +2,7 @@ body {
     margin: 0;
 }
 
+
 a {
     text-decoration: none;
     color: black;
@@ -156,10 +157,6 @@ a {
 }
 
 @media screen and (min-width: 1080px){
-    body {
-        background-color: lightblue;
-    }
-
     .card {
         flex: 0 1 calc(33.33% - 2em);
     }
