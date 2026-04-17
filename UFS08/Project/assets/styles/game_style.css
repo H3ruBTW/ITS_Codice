@@ -63,60 +63,6 @@ a:active {
     margin: 0;
 }
 
-.under_header {
-    width: 100%;
-    background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 40%, #1b5e20 100%);
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-    padding: 1.5em;
-    border-top: 1px solid #ffffff;
-    border-bottom: 1px solid #ffffff;
-}
-
-.under_nav_list {
-    width: 100%;
-    display: flex;
-    gap: 2.5em;
-    font-size: 1em;
-}
-
-.sections {
-    margin: 2em;
-    padding: 1em;
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    background-color: rgba(255, 255, 255, 0.1);
-    border: #4CAF50 1px solid;
-    border-radius: 10px;
-    display: flex;
-    flex-direction: column;
-}
-
-.sections > * {
-    margin-top: 1em
-}
-
-.play_button {
-    padding: 0.75em 1.5em;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    font-size: 1em;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    font-family: "cinzel", sans-serif;
-}
-
-.play_button:active {
-    background-color: #b8b8b8;
-}
-
-.button_center {
-    align-self: center;
-}
-
 .site_footer {
     width: 100%;
     padding: 1em;
@@ -128,16 +74,6 @@ a:active {
 
 
 @media screen and (min-width: 640px){
-    .sections {
-        margin: 2em 200px;
-        padding: 50px;
-        transition: transform 1.5s ease, border 0.5s ease, background-color ease 0.5s;
-    }
-
-    .play_button:hover {
-        background-color: #d3d3d3;
-        color:#4CAF50;
-    }
 
     .site_footer .divider {
         display: none;
@@ -162,20 +98,12 @@ a:active {
 }
 
 @media screen and (min-width: 640px) and (max-width: 980px) {
-    .sections{
-        margin: 2em 10vw;
-        padding: 50px;
-    }
+    
     
 }
 
 /*CON MOUSE*/
 @media screen and (min-width: 640px) and (hover: hover) and (pointer: fine) {
-    .sections:hover {
-        transform: scale(1.01);
-        border: 2px solid #45a348;
-        background-color: rgba(255, 255, 255, 0.12);
-    }
 
     a:hover{
         color: rgb(185, 185, 185);
@@ -184,4 +112,46 @@ a:active {
     }
 }
 
+.carta {
+    width: 50px;
+    border-radius: 5px;
+}
 
+.div_bot {
+    width: 95vw;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    border: 1px solid #2e7d32;
+    border-bottom: transparent;
+    background-color: rgba(255,255,255,0.1);
+    height: 100px;
+    padding: 1em;
+}
+
+.div_banco {
+    width: 95vw;
+    border: 1px solid #2e7d32;
+    background-color: rgba(255,255,255,0.1);
+    border-top: transparent;
+    border-bottom: transparent;
+    height: 200px;
+}
+
+.div_giocatore {
+    width: 95vw;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    border: 1px solid #2e7d32;
+    border-top: transparent;
+    background-color: rgba(255,255,255,0.1);
+    height: 200px;
+    padding: 1em;
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    align-items: center;
+    margin: 2em
+}
