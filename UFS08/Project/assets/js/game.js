@@ -1,43 +1,31 @@
 const SEMI   = ["bastoni", "coppe", "denari", "spade"];
 
 class Mazzo {
-    #carte = [];
+    carte = [];
 
     constructor() {
         for (const seme of SEMI)
             for (let valore = 1; valore<=10; valore++)
-                this.#carte.push({ seme, valore });
+                this.carte.push({ seme, valore });
     }
 
     // Fisher-Yates — O(n), il più efficiente possibile
     mescola() {
-        for (let i = this.#carte.length - 1; i > 0; i--) {
+        for (let i = this.carte.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
-            [this.#carte[i], this.#carte[j]] = [this.#carte[j], this.#carte[i]];
+            [this.carte[i], this.carte[j]] = [this.carte[j], this.carte[i]];
         }
     }
 
     pesca() {
         if (this.isEmpty) throw new Error("Mazzo vuoto!");
-        return this.#carte.pop();         
+        return this.carte.pop();         
     }
 
-    guarda() {
-        if (this.isEmpty) throw new Error("Mazzo vuoto!");
-        return this.#carte.at(-1);         
-    }
-
-    get size()    { return this.#carte.length; }
-    get isEmpty() { return this.#carte.length === 0; }
-
-    toString() {
-        return this.#carte
-            .map(c => `${c.valore} di ${c.seme}`)
-            .join("\n");
-    }
+    get size()    { return this.carte.length; }
+    get isEmpty() { return this.carte.length === 0; }
 }
 
-// ── Utilizzo ─────────────────────────────────
 const mazzo = new Mazzo();
 mazzo.mescola();
 
