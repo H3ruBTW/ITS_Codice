@@ -114,7 +114,17 @@ a:active {
 
 .carta {
     width: 50px;
+    height: calc(50px*35/22);
     border-radius: 5px;
+    
+}
+
+.toplay {
+    cursor: pointer;
+}
+
+.selected {
+    border: 2px solid #00fbff;
 }
 
 .div_bot {
@@ -124,8 +134,11 @@ a:active {
     border: 1px solid #2e7d32;
     border-bottom: transparent;
     background-color: rgba(255,255,255,0.1);
-    height: 104px;
+    height: 120px;
     padding: 1em;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
 }
 
 .div_banco {
@@ -134,7 +147,25 @@ a:active {
     background-color: rgba(255,255,255,0.1);
     border-top: transparent;
     border-bottom: transparent;
-    height: 208px;
+    height: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 50px;
+}
+
+.banco_carte {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    padding-left: 5px;
+}
+
+.banco_mazzo {
+    display: flex;
+    align-items: center;
+    padding-right: 5px;
+    gap: 5px;
 }
 
 .div_giocatore {
@@ -146,6 +177,16 @@ a:active {
     background-color: rgba(255,255,255,0.1);
     height: 204px;
     padding: 1em;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.gioc_carte {
+    display: flex;
+    justify-content: center;
+    gap: 10px;  
 }
 
 main {
@@ -153,5 +194,21 @@ main {
     flex-direction: column;
     gap: 0;
     align-items: center;
-    margin: 2em
+    margin: 1em
+}
+
+.play_button {
+    padding: 0.75em 1.5em;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-family: "cinzel", sans-serif;
+}
+
+.play_button:active {
+    background-color: #b8b8b8;
 }
