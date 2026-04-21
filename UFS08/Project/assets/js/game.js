@@ -272,6 +272,8 @@ function launchCard(carta, scelta){
                 div_banco_cards[presaOrdinata[i]].remove()
             }
 
+            if(banco_carte.length === 0) scopa(player_turn)
+
             updateCounterGioc()
         }
 
@@ -295,6 +297,8 @@ function launchCard(carta, scelta){
                 banco_carte.splice(presaOrdinata[i], 1)
                 div_banco_cards[presaOrdinata[i]].remove()
             }
+
+            if(banco_carte.length === 0) scopa(player_turn)
 
             updateCounterBot()
         }
@@ -331,6 +335,20 @@ function launchCardOption(carta, scelta){
     let optionsContainer = document.getElementsByClassName("div_options")
     optionsContainer[0].style.visibility = "hidden"
     launchCard(carta, scelta)
+}
+
+let scope_giocatore = 0
+let scope_bot = 0
+
+function scopa(isPlayer){
+    if(isPlayer){
+        scope_giocatore++
+        // TODO: animazione/feedback visivo
+        console.log("SCOPA del giocatore!", scope_giocatore)
+    } else {
+        scope_bot++
+        console.log("SCOPA del bot!", scope_bot)
+    }
 }
 
 /* Algoritmo di ricerca delle possibili prese sul tavolo con l'uso dei filtri su array
