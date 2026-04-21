@@ -199,7 +199,6 @@ main {
 
 .play_button {
     padding: 0.75em 1.5em;
-    background-color: #4CAF50;
     color: white;
     border: none;
     border-radius: 5px;
@@ -207,8 +206,35 @@ main {
     cursor: pointer;
     transition: background-color 0.3s ease;
     font-family: "cinzel", sans-serif;
+    background-color: #b8b8b8;
 }
 
-.play_button:active {
+.play_button:enabled{
+    background-color: #4CAF50;
+}
+
+.play_button:disabled {
     background-color: #b8b8b8;
+    cursor: not-allowed;
+}
+
+.play_button:enabled:active {
+    background-color: #b8b8b8;
+}
+
+.div_options {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.9);
+    border: 1px solid #ffffff;
+    border-radius: 10px;
+    padding: 1em;
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+    width: 300px;
+    align-items: center;
+    text-align: center;
 }
