@@ -42,7 +42,7 @@ bot_mazzo = []
 let player_starts = Math.random() >= 0
 let player_turn = player_starts
 
-//startGame()
+startGame()
 
 function startGame(){
     pescataDiInfraturno()
@@ -164,11 +164,7 @@ let moreOptions
 
 function playCard(carta){
     if(player_turn){
-        let options = trovaPrese(giocatore_carte[carta.id], banco_carte)
-    }
-    //FIXARE ERRORE DELLA CARTA SELEZIONATA CHE NON CORRISPONDE ALLA CARTA NELL'ARRAY
-
-    if(player_turn){
+        let options = trovaPrese(giocatore_carte[carta.id].valore, banco_carte)
         if(options.length > 0){
             moreOptions = options.length > 1
         } else {
@@ -180,7 +176,7 @@ function playCard(carta){
         } else {
 
         }
-    } else {
+    }else{
 
     }
 }
