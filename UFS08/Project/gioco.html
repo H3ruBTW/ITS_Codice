@@ -29,8 +29,16 @@
         
 
         <main>
-            <div id="bot" class="div_bot">
+            <div class="div_bot">
+                <div id="bot" class="bot_carte">
+                    
+                </div>
+                <div class="bot_mazzetto">
+                    <div id="mazzettoBot" class="mazzetto_vuoto">
 
+                    </div>
+                    <span id="counterBot">0</span>
+                </div>
             </div>
             <div class="div_banco">
                 <div id="banco_c" class="banco_carte">
@@ -38,13 +46,22 @@
                 </div>
                 <div id="banco_m" class="banco_mazzo">
                     <img src="assets/images/carte/retro.jpg" alt="retro_carta" class="carta">
-                    <span id="counter">40</span>
+                    <span id="counterBanco">40</span>
                 </div>
             </div>
             <div class="div_giocatore">
-                <div id="giocatore" class="gioc_carte">
+                <div class="gioc_table">
+                    <div id="giocatore" class="gioc_carte">
 
+                    </div>
+                    <div class="gioc_mazzetto">
+                        <div id="mazzettoG" class="mazzetto_vuoto">
+
+                        </div>
+                        <span id="counterG">0</span>
+                    </div>
                 </div>
+                
                 <div class="gioc_control">
                     <button id="confirm" class="play_button" disabled>Conferma</button>
                 </div>

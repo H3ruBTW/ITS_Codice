@@ -15,6 +15,7 @@ body {
     background: linear-gradient(90deg, #1a3d1a 0%, #2d6a2d 50%, #1a3d1a 100%);
     color: white;
     font-family: 'Cinzel', sans-serif;
+    touch-action: manipulation;
 }
 
 .site_header {
@@ -141,6 +142,22 @@ a:active {
     gap: 10px;
 }
 
+.bot_carte {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    min-width: 170px;
+    justify-content: end;
+}
+
+.bot_mazzetto {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+}
+
 .div_banco {
     width: 95vw;
     border: 1px solid #2e7d32;
@@ -159,6 +176,7 @@ a:active {
     gap: 10px;
     flex-wrap: wrap;
     padding-left: 5px;
+    min-width: 230px;
 }
 
 .banco_mazzo {
@@ -185,8 +203,29 @@ a:active {
 
 .gioc_carte {
     display: flex;
-    justify-content: center;
+    justify-content: end;
     gap: 10px;  
+    min-width: 170px;
+}
+
+.gioc_table {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.gioc_mazzetto {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+}
+
+.mazzetto_vuoto {
+    width: 50px;
+    height: calc(50px*35/22);
+    border-radius: 5px;
+    background-color: rgba(255,255,255,0.1);
 }
 
 main {
@@ -235,6 +274,15 @@ main {
     flex-direction: column;
     gap: 1em;
     width: 300px;
+    min-height: 400px;
     align-items: center;
     text-align: center;
+    visibility: hidden;
+}
+
+.opzioni-wrap {
+    display: flex;
+    gap: 1em;
+    flex-wrap: wrap;
+    justify-content: space-around;
 }

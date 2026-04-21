@@ -33,11 +33,14 @@ mazzo.mescola();
 
 let main = document.querySelector("main");
 
-banco_carte = [];
-giocatore_carte = [];
-bot_carte = [];
-giocatore_mazzo = []
-bot_mazzo = []
+let banco_carte = [];
+let giocatore_carte = [];
+let bot_carte = [];
+let giocatore_mazzo = []
+let bot_mazzo = []
+let div_banco_cards = null
+let div_giocatore_cards = null
+let div_bot_cards = null
 
 let player_starts = Math.random() >= 0
 let player_turn = player_starts
@@ -49,6 +52,8 @@ function startGame(){
 
     for(let i=0; i<4; i++)
         addCard(mazzo.pesca(), "banco_c")
+
+    updateCounterBanco()
 
     if(player_turn)
         turnoGiocatore()
@@ -70,7 +75,7 @@ function pescataDiInfraturno(){
         }
     }
 
-    updateCounter()
+    updateCounterBanco()
 }
 
 function addCard (carta, contenitore) {
@@ -101,23 +106,59 @@ function addCard (carta, contenitore) {
     document.getElementById(contenitore).appendChild(img)
 }
 
-function updateCounter(){
-    document.getElementById("counter").textContent = mazzo.size
+function updateCounterBanco(){
+    document.getElementById("counterBanco").textContent = mazzo.size
 }
 
-let div_banco_cards = null
+function updateCounterGioc(){
+    
+    //rimuove il div mazzetto vuoto e mette retro.jpg
+    let div_mazzo = document.getElementsByClassName("gioc_mazzetto")
+    div_mazzo[0].innerHTML = ""
+    const img = document.createElement("img");
+    img.src = "assets/images/carte/retro.jpg"
+    img.alt = "Retro carta"
+    img.classList.add("carta")
+    div_mazzo[0].appendChild(img)
+    div_mazzo[0].innerHTML += "<span id='counterG'>" + giocatore_mazzo.length + "</span>"
+}
+
+function updateCounterBot(){
+    
+    //rimuove il div mazzetto vuoto e mette retro.jpg
+    let div_mazzo = document.getElementsByClassName("bot_mazzetto")
+    div_mazzo[0].innerHTML = ""
+    const img = document.createElement("img");
+    img.src = "assets/images/carte/retro.jpg"
+    img.alt = "Retro carta"
+    img.classList.add("carta")
+    div_mazzo[0].appendChild(img)
+    div_mazzo[0].innerHTML += "<span id='counterBot'>" + giocatore_mazzo.length + "</span>"
+}
+
 
 function turnoGiocatore(){
-    /*TODO: Controllo per fine di turno */
-
     let selectedCard = null
     let button = document.getElementById("confirm")
+    let newButton
 
-    div_banco_cards = document.querySelectorAll("#giocatore img")
+    div_giocatore_cards = document.querySelectorAll("#giocatore img")
+
+    div_giocatore_cards.forEach(c => {
+        c.classList.remove("toplay", "selected")
+    })
+
+    newButton = button.cloneNode(true)
+    button.replaceWith(newButton)
+    newButton.addEventListener("click", () =>  {
+        if(selectedCard){
+           playCard(selectedCard) 
+           newButton.disabled = true
+        }})
 
     let i = 0
 
-    for (const card of div_banco_cards) {
+    for (const card of div_giocatore_cards) {
         card.id = i
         card.classList.add("toplay")
         card.addEventListener("click", () => {
@@ -125,28 +166,50 @@ function turnoGiocatore(){
                 selectedCard.classList.remove("selected")
                 if (selectedCard === card) {
                     selectedCard = null
-                    button.disabled = true
+                    newButton.disabled = true
                     return
                 }
             }
 
             card.classList.add("selected")
             selectedCard = card
-            button.disabled = false
+            newButton.disabled = false
         })
 
         i++
     }
 
-    button.addEventListener("click", () => playCard(selectedCard))
+    
 
 }
 
 function turnoBot(){
-    /*TODO: Controllo per fine di turno */
+    div_bot_cards = document.querySelectorAll("#bot img")
+
+    const mossa = calcolaMossaBot();
+
+    setTimeout(() => {
+        div_banco_cards = document.querySelectorAll("#banco_c img")
+        launchCard(mossa.carta, mossa.scelta);
+    }, 1000);
 }
 
 function endOfTurn(){
+    if(giocatore_carte.length === 0 && bot_carte.length === 0){
+        if(mazzo.isEmpty)
+            endOfGame()
+        else{
+            pescataDiInfraturno()
+
+            if(player_turn)
+                turnoGiocatore()
+            else
+                turnoBot()
+        }
+            
+        return
+    }
+
     if(player_turn){
         player_turn = false
         turnoBot()
@@ -157,57 +220,117 @@ function endOfTurn(){
 }
 
 function endOfTurns(){
-
+    
 }
+
+function endOfGame(){}
 
 let moreOptions 
 
 function playCard(carta){
+    moreOptions = false
+    div_banco_cards = document.querySelectorAll("#banco_c img")
+
     if(player_turn){
         let options = trovaPrese(giocatore_carte[carta.id].valore, banco_carte)
-        if(options.length > 0){
-            moreOptions = options.length > 1
+        if(options.length === 0){
+            launchCard(carta, "none")
+            return
+        }
+
+        moreOptions = options.length > 1
+
+        if(moreOptions){
+            showOptions(carta, options)
         } else {
             launchCard(carta, options[0])
         }
-
-        if(moreOptions){
-
-        } else {
-
-        }
-    }else{
-
     }
 }
 
 function launchCard(carta, scelta){
+    div_banco_cards = document.querySelectorAll("#banco_c img")
+    let card
+
     if(player_turn){
+        card = giocatore_carte[carta.id]
+
         if(scelta === "none"){
-            //butta la carta sul banco senza prendere
-            banco_carte.push(carta)
-            addCard(carta, "banco_c")
+            addCard(card, "banco_c")
             giocatore_carte.splice(carta.id, 1)
+            div_giocatore_cards[carta.id].remove()
         } else {
-            div_banco_cards[scelta].remove()
-            //rimuove l'elemento dal banco_carte
-            giocatore_mazzo.push(carta)
+            const presaOrdinata = [...scelta].sort((a, b) => b - a) // ← QUI
+            
+            div_giocatore_cards[carta.id].remove()
+            giocatore_mazzo.push(card)
             giocatore_carte.splice(carta.id, 1)
 
-            for(let i=scelta.size-1; i>=0; i--){
-                giocatore_mazzo.push(banco_carte[scelta[i]])
-                banco_carte.splice(scelta[i], 1)
+            for(let i = 0; i < presaOrdinata.length; i++){
+                giocatore_mazzo.push(banco_carte[presaOrdinata[i]])
+                banco_carte.splice(presaOrdinata[i], 1)
+                div_banco_cards[presaOrdinata[i]].remove()
             }
-        }
-        
 
-        endOfTurn()
+            updateCounterGioc()
+        }
+
     } else {
+        card = bot_carte[carta.id]
+
+        if(scelta === "none"){
+            addCard(card, "banco_c")
+            bot_carte.splice(carta.id, 1)
+            div_bot_cards[carta.id].remove()
+        } else {
+            const presaOrdinata = [...scelta].sort((a, b) => b - a) // ← QUI
+
+            div_bot_cards[carta.id].src = `assets/images/carte/${card.valore}_${card.seme}.jpg`
+            div_bot_cards[carta.id].remove()
+            bot_mazzo.push(card)
+            bot_carte.splice(carta.id, 1)
+
+            for(let i = 0; i < presaOrdinata.length; i++){
+                bot_mazzo.push(banco_carte[presaOrdinata[i]])
+                banco_carte.splice(presaOrdinata[i], 1)
+                div_banco_cards[presaOrdinata[i]].remove()
+            }
+
+            updateCounterBot()
+        }
     }
+
+    endOfTurn()
 }
 
-function showOptions(options){
+function showOptions(carta, options){
+    let optionsContainer = document.getElementsByClassName("div_options")
+    let optionsList = document.getElementById("opzioni")
 
+    optionsList.innerHTML = ""
+
+    for(let i=0; i<options.length; i++){
+        let option_button = document.createElement("button")
+
+        for(let j=0; j<options[i].length; j++){
+            if(j>0)
+                option_button.textContent += " + "
+            option_button.textContent += banco_carte[options[i][j]].valore + " " + banco_carte[options[i][j]].seme + " "
+        }
+
+        option_button.classList.add("play_button")
+        optionsList.appendChild(option_button)
+
+        option_button.addEventListener("click", () => launchCardOption(carta, options[i]))
+    }
+
+    optionsContainer[0].style.visibility = "visible"
+}
+
+function launchCardOption(carta, scelta){
+    let optionsContainer = document.getElementsByClassName("div_options")
+    optionsContainer[0].style.visibility = "hidden"
+    launchCard(carta, scelta)
 }
 
 /* Algoritmo di ricerca delle possibili prese sul tavolo con l'uso dei filtri su array
@@ -244,4 +367,76 @@ function trovaPrese(cartaValore, tavolo) {
 
     cerca(0, [], 0);
     return combinazioni; // array di array di indici
+}
+
+/* Logica del Bot */
+function calcolaMossaBot() {
+    let migliorMossa  = null;
+    let migliorScore  = -Infinity;
+
+    for (let i = 0; i < bot_carte.length; i++) {
+        const carta   = bot_carte[i];
+        const opzioni = trovaPrese(carta.valore, banco_carte);
+
+        if (opzioni.length === 0) {
+            const score = valutaButto(carta);
+            if (score > migliorScore) {
+                migliorScore = score;
+                migliorMossa = { carta: { id: i }, scelta: "none" };
+            }
+        } else {
+            for (const presa of opzioni) {
+                const score = valutaPresa(carta, presa);
+                if (score > migliorScore) {
+                    migliorScore = score;
+                    migliorMossa = { carta: { id: i }, scelta: presa };
+                }
+            }
+        }
+    }
+
+    return migliorMossa;
+}
+
+function valutaPresa(carta, presa) {
+    let score = 0;
+
+    const cartePrese  = presa.map(i => banco_carte[i]);
+    const bancoRimasto = banco_carte.filter((_, i) => !presa.includes(i));
+
+    // Scopa
+    if (bancoRimasto.length === 0) score += 100;
+
+    // Numero di carte prese
+    score += presa.length * 10;
+
+    // Sette bello
+    if (carta.seme === "denari" && carta.valore === 7) score += 30;
+    if (cartePrese.some(c => c.seme === "denari" && c.valore === 7)) score += 30;
+
+    // Denari
+    if (carta.seme === "denari") score += 5;
+    score += cartePrese.filter(c => c.seme === "denari").length * 5;
+
+    // ❌ RIMOSSO — il bot non guarda più le tue carte
+    // if (bancoRimasto.length === 1) { ...giocatore_carte... }
+
+    score -= carta.valore;
+
+    return score;
+}
+
+function valutaButto(carta) {
+    let score = 0;
+
+    // ❌ RIMOSSO — il bot non guarda più le tue carte
+    // const bancoDopoMossa = [...banco_carte, carta];
+    // const scopaAvversario = giocatore_carte.some(...)
+
+    if (carta.seme === "denari") score -= 15;
+    if (carta.valore === 7)      score -= 10;
+
+    score -= carta.valore;
+
+    return score;
 }
