@@ -52,6 +52,11 @@ function startGame() {
         banco_carte.push(mazzo.pesca())
 
     renderTable()
+
+    if(player_starts)
+        giocatoreGioca()
+    else
+        botGioca()
 }
 
 function distribuisci(){
