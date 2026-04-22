@@ -140,7 +140,7 @@ function updateCounterBot(){
 function turnoGiocatore(){
     let selectedCard = null
     let button = document.getElementById("confirm")
-    let newButton
+    let newButton = null
 
     div_giocatore_cards = document.querySelectorAll("#giocatore img")
 
@@ -151,10 +151,16 @@ function turnoGiocatore(){
     newButton = button.cloneNode(true)
     button.replaceWith(newButton)
     newButton.addEventListener("click", () =>  {
-        if(selectedCard){
-           playCard(selectedCard) 
-           newButton.disabled = true
-        }})
+        if(!selectedCard) return
+        console.log("selectedCard:", selectedCard)
+        console.log("selectedCard.id:", selectedCard.id)
+        console.log("giocatore_carte:", giocatore_carte)
+    
+        const cartaDaGiocare = selectedCard  // ← salva prima
+        selectedCard = null                  // ← resetta subito
+        newButton.disabled = true
+        playCard(cartaDaGiocare) 
+    })
 
     let i = 0
 
@@ -199,12 +205,7 @@ function endOfTurn(){
         if(mazzo.isEmpty)
             endOfGame()
         else{
-            pescataDiInfraturno()
-
-            if(player_turn)
-                turnoGiocatore()
-            else
-                turnoBot()
+            endOfTurns()
         }
             
         return
@@ -220,7 +221,16 @@ function endOfTurn(){
 }
 
 function endOfTurns(){
-    
+    pescataDiInfraturno()
+
+    if(player_starts){
+        player_turn = true
+        turnoGiocatore()
+    }else{
+        player_turn = false
+        turnoBot()
+    }
+        
 }
 
 function endOfGame(){}
@@ -231,21 +241,20 @@ function playCard(carta){
     moreOptions = false
     div_banco_cards = document.querySelectorAll("#banco_c img")
 
-    if(player_turn){
-        let options = trovaPrese(giocatore_carte[carta.id].valore, banco_carte)
-        if(options.length === 0){
-            launchCard(carta, "none")
-            return
-        }
-
-        moreOptions = options.length > 1
-
-        if(moreOptions){
-            showOptions(carta, options)
-        } else {
-            launchCard(carta, options[0])
-        }
+    let options = trovaPrese(giocatore_carte[carta.id].valore, banco_carte)
+    if(options.length === 0){
+        launchCard(carta, "none")
+        return
     }
+
+    moreOptions = options.length > 1
+
+    if(moreOptions){
+        showOptions(carta, options)
+    } else {
+        launchCard(carta, options[0])
+    }
+    
 }
 
 function launchCard(carta, scelta){
@@ -257,14 +266,14 @@ function launchCard(carta, scelta){
 
         if(scelta === "none"){
             addCard(card, "banco_c")
-            giocatore_carte.splice(carta.id, 1)
+            giocatore_carte[carta.id] = null
             div_giocatore_cards[carta.id].remove()
         } else {
             const presaOrdinata = [...scelta].sort((a, b) => b - a) // ← QUI
             
             div_giocatore_cards[carta.id].remove()
             giocatore_mazzo.push(card)
-            giocatore_carte.splice(carta.id, 1)
+            giocatore_carte[carta.id] = null
 
             for(let i = 0; i < presaOrdinata.length; i++){
                 giocatore_mazzo.push(banco_carte[presaOrdinata[i]])
@@ -305,6 +314,7 @@ function launchCard(carta, scelta){
     }
 
     endOfTurn()
+
 }
 
 function showOptions(carta, options){
