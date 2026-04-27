@@ -120,11 +120,19 @@ a:active {
     }
 }
 
+main {
+    position: relative;
+}
+
 .carta {
     width: 50px;
     height: calc(50px*35/22);
     border-radius: 5px;
     
+}
+
+.toanimate {
+    position: absolute;
 }
 
 .toplay {
@@ -133,6 +141,10 @@ a:active {
 
 .selected {
     border: 2px solid #00fbff;
+}
+
+.highlighted {
+    border: 2px solid gold;
 }
 
 .div_bot {
@@ -312,6 +324,7 @@ main {
     text-align: center;
     justify-content: center;
     opacity: 0;
+    pointer-events: none;
 }
 
 .div_scopa#scopa_g {
@@ -348,7 +361,19 @@ main {
     min-height: 400px;
     align-items: center;
     text-align: center;
-    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.fadein {
+    animation: fadein ease-out 1s forwards;
+    pointer-events: all;
+}
+
+@keyframes fadein {
+    0% {opacity: 0;}
+    50% {opacity: 0.75;}
+    100% {opacity: 1;}
 }
 
 .points {
@@ -362,4 +387,24 @@ main {
 .points > * {
     width: 45%;
     text-align: left;
+}
+
+@keyframes volaAlBanco {
+    from { transform: translate(0, 0); }
+    to   { transform: translate(var(--tx), var(--ty)); }
+}
+
+.vola-al-banco {
+    position: absolute;
+    animation: volaAlBanco 1s ease-out forwards;
+}
+
+@keyframes volaAllaMano {
+    from { transform: translate(0, 0); }
+    to   { transform: translate(var(--tx), var(--ty)); }
+}
+
+.vola-alla-mano {
+    position: absolute;
+    animation: volaAllaMano 0.5s ease-in-out forwards;
 }

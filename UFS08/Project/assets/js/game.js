@@ -37,7 +37,7 @@ let bot_carte = [];
 let giocatore_mazzo = []
 let bot_mazzo = []
 
-let player_starts = Math.random() >= 0.5
+let player_starts = Math.random() >= 0
 let player_turn = player_starts
 
 let ultima_presa_giocatore = false
@@ -48,31 +48,138 @@ let punti_bot = {primiera: 0, "sette bello": 0, carte: 0, ori: 0, scope: 0}
 startGame();
 
 function startGame() {
+    let carta
+
     distribuisci()
-    
-    for(let i=0; i<4; i++)
-        banco_carte.push(mazzo.pesca())
 
-    document.getElementById("confirm").addEventListener("click", () => {
-        if (!carta_selezionata) return  // safety check
+    setTimeout(() => {
+        for(let i=0; i<4; i++){
+            setTimeout(() => {
+                renderTable()
+
+                banco_carte.push(carta = mazzo.pesca())
+
+                pescaggioBanco(carta, i)
+            }, i * 500)
+            
+        }
+        setTimeout(() => {
+            renderTable()
+            
+            document.getElementById("confirm").addEventListener("click", () => {
+                if (!carta_selezionata) return  // safety check
+
+                confermaCarta()
+            })
+
+            gestisciTurno()
+        }, 2000)
         
-        confermaCarta()
-    })
-
-    renderTable()
-
-    gestisciTurno()
+    }, 3500)
+    
+    
 }
 
 function distribuisci(){
-    for(let i=0; i<3; i++)
+    let carta
+
+    for(let i=0; i<3; i++){
+        
         if(player_starts){
-            giocatore_carte.push(mazzo.pesca())
-            bot_carte.push(mazzo.pesca())
-        } else {
-            bot_carte.push(mazzo.pesca())
-            giocatore_carte.push(mazzo.pesca())
+            setTimeout(() => {
+                renderTable()
+
+                giocatore_carte.push(carta = mazzo.pesca())
+
+                animazionePescaggio(carta, true)
+            }, 500 + 1000 * i)
+
+            setTimeout(() => {
+                renderTable()
+
+                bot_carte.push(mazzo.pesca())
+
+                animazionePescaggio(null, false)
+            }, 1000 + 1000 * i)
+            
+        } else {            
+            setTimeout(() => {
+                renderTable()
+
+                bot_carte.push(mazzo.pesca())
+
+                animazionePescaggio(null, false)
+            }, 500 + 1000 * i)
+
+            setTimeout(() => {
+                renderTable()
+
+                giocatore_carte.push(carta = mazzo.pesca())
+
+                animazionePescaggio(carta, true)                
+            }, 1000 + 1000 * i)
         }
+    }
+}
+
+function animazionePescaggio(carta, giocatore){
+    const main = document.querySelector("main")
+    const mainRect = main.getBoundingClientRect()
+    const mazzo = document.getElementById("banco_m").getBoundingClientRect()
+
+    const img = document.createElement("img")
+    img.src = giocatore 
+        ? "assets/images/carte/" + carta.valore + "_" + carta.seme + ".jpg"
+        : "assets/images/carte/retro.jpg"
+    img.classList.add("carta", "toanimate")
+
+
+
+    // parte dal mazzo
+    img.style.left = (mazzo.left + mazzo.width  / 2 - mainRect.left) + "px"
+    img.style.top  = (mazzo.top  + mazzo.height / 2 - mainRect.top)  + "px"
+
+    // destinazione: div_giocatore o div_bot
+    const dest = document.getElementsByClassName(giocatore ? "div_giocatore" : "div_bot")[0].getBoundingClientRect()
+    const targetX = (dest.left + dest.width  / 2 - mainRect.left) - parseFloat(img.style.left)
+    const targetY = giocatore ? (dest.top  + dest.height / 2 - mainRect.top - 80)  - parseFloat(img.style.top) 
+                        : (dest.top  + dest.height / 2 - mainRect.top - 40)  - parseFloat(img.style.top) 
+
+    img.style.setProperty("--tx", targetX + "px")
+    img.style.setProperty("--ty", targetY + "px")
+
+    main.appendChild(img)
+    img.classList.add("vola-alla-mano")
+
+    img.addEventListener("animationend", () => img.remove(), { once: true })
+}
+
+function pescaggioBanco(carta, n){
+    const main = document.querySelector("main")
+    const mainRect = main.getBoundingClientRect()
+    const mazzo = document.getElementById("banco_m").getBoundingClientRect()
+
+    const img = document.createElement("img")
+    img.src = "assets/images/carte/" + carta.valore + "_" + carta.seme + ".jpg"
+        
+    img.classList.add("carta", "toanimate")
+
+    // parte dal mazzo
+    img.style.left = (mazzo.left + mazzo.width  / 2 - mainRect.left) + "px"
+    img.style.top  = (mazzo.top  + mazzo.height / 2 - mainRect.top)  + "px"
+
+    // destinazione: div_giocatore o div_bot
+    const dest = document.getElementsByClassName("div_banco")[0].getBoundingClientRect()
+    const targetX = (dest.left + dest.width  / 2 - mainRect.left - 160 + (55 * n)) - parseFloat(img.style.left)
+    const targetY = (dest.top  + dest.height / 2 - mainRect.top - 40)  - parseFloat(img.style.top) 
+
+    img.style.setProperty("--tx", targetX + "px")
+    img.style.setProperty("--ty", targetY + "px")
+
+    main.appendChild(img)
+    img.classList.add("vola-alla-mano")
+
+    img.addEventListener("animationend", () => img.remove(), { once: true })
 }
 
 function renderTable(){
@@ -185,6 +292,7 @@ function aggiornaBottone() {
 }
 
 function gestisciTurno(){
+    let pescaggio = false
     carta_selezionata = null
     aggiornaBottone()
 
@@ -202,18 +310,32 @@ function gestisciTurno(){
             setTimeout(endGame, 1500)
             return
         } else {
+            pescaggio = true
             distribuisci()
             renderTable()
         }
     }
 
-    if (player_turn) {
-        console.log("Turno: GIOCATORE")
-        giocatoreGioca()
-    } else {
-        console.log("Turno: BOT")
-        setTimeout(botGioca, 800)
+    if(pescaggio)
+        setTimeout(() => {
+            if (player_turn) {
+                console.log("Turno: GIOCATORE")
+                giocatoreGioca()
+            } else {
+                console.log("Turno: BOT")
+                setTimeout(botGioca, 800)
+            }
+        }, 3000)
+    else {
+        if (player_turn) {
+            console.log("Turno: GIOCATORE")
+            giocatoreGioca()
+        } else {
+            console.log("Turno: BOT")
+            setTimeout(botGioca, 800)
+        }
     }
+    
 }
 
 function endGame(){
@@ -287,7 +409,7 @@ function endGame(){
     div_punti_b.appendChild(p)
 
     let div_punti = document.getElementById("end_game")
-    div_punti.style.visibility = "visible"
+    div_punti.classList.add("fadein")
 }
 
 function calcolaPrimiera(){
@@ -362,6 +484,9 @@ function confermaCarta() {
     if (!carta_selezionata) return
 
     const carta = carta_selezionata.element
+
+    carta_selezionata = null
+
     const prese = calcolaPrese(carta, banco_carte)
 
     console.log(carta)
@@ -378,37 +503,47 @@ function confermaCarta() {
 function cartaAlBanco(carta) {
     // rimuove la carta dalla mano del giocatore
     giocatore_carte = giocatore_carte.filter(c => c !== carta)
-    
-    // aggiunge la carta al banco
-    banco_carte.push(carta)
-
-    carta_selezionata = null
-    player_turn = false
 
     renderTable()
-    gestisciTurno()
+
+    animazioneCarta(carta, true)
+
+    setTimeout(() => {
+        // aggiunge la carta al banco
+        banco_carte.push(carta)
+
+        player_turn = false
+
+        renderTable()
+        gestisciTurno()
+    }, 1000)
 }
 
 function eseguiPresa(carta, scelta){
     giocatore_mazzo.push(carta)
-    
-    scelta.forEach(c => {
-        giocatore_mazzo.push(c)
-    })
 
     giocatore_carte = giocatore_carte.filter(c => c !== carta)
 
-    banco_carte = banco_carte.filter(c => !scelta.includes(c))
-
-    if(banco_carte.length === 0 && (bot_carte.length > 0 || giocatore_carte.length > 0 || !mazzo.isEmpty))
-        scopa(true)
-
-    ultima_presa_giocatore = true
-    carta_selezionata = null
-    player_turn = false
-
     renderTable()
-    gestisciTurno()
+
+    animazioneCarta(carta, true)
+
+    setTimeout(() => {
+        scelta.forEach(c => {
+            giocatore_mazzo.push(c)
+        })
+
+        banco_carte = banco_carte.filter(c => !scelta.includes(c))
+
+        if(banco_carte.length === 0 && (bot_carte.length > 0 || giocatore_carte.length > 0 || !mazzo.isEmpty))
+            scopa(true)
+
+        ultima_presa_giocatore = true
+        player_turn = false
+
+        renderTable()
+        gestisciTurno()
+    }, 1000)
 }
 
 function mostraOpzioni(carta, scelte){
@@ -451,35 +586,45 @@ function botGioca(){
 function botCartaAlBanco(carta){
     // rimuove la carta dalla mano del giocatore
     bot_carte = bot_carte.filter(c => c !== carta)
-    
-    // aggiunge la carta al banco
-    banco_carte.push(carta)
 
-    player_turn = true
+    animazioneCarta(carta, false)
 
-    renderTable()
-    gestisciTurno()
+    setTimeout(() => {
+        // aggiunge la carta al banco
+        banco_carte.push(carta)
+
+        player_turn = true
+
+        renderTable()
+        gestisciTurno()
+    }, 1000)
 }
 
 function botEffettuaPresa(carta, presa){
     bot_mazzo.push(carta)
-    
-    presa.forEach(c => {
-        bot_mazzo.push(c)
-    })
 
     bot_carte = bot_carte.filter(c => c !== carta)
 
-    banco_carte = banco_carte.filter(c => !presa.includes(c))
-
-    if(banco_carte.length === 0 && (bot_carte.length > 0 || giocatore_carte.length > 0 || !mazzo.isEmpty))
-        scopa(false)
-
-    ultima_presa_giocatore = false
-    player_turn = true
-
     renderTable()
-    gestisciTurno()
+
+    animazioneCarta(carta, false)
+
+    setTimeout(() => {
+        presa.forEach(c => {
+            bot_mazzo.push(c)
+        })
+
+        banco_carte = banco_carte.filter(c => !presa.includes(c))
+
+        if(banco_carte.length === 0 && (bot_carte.length > 0 || giocatore_carte.length > 0 || !mazzo.isEmpty))
+            scopa(false)
+
+        ultima_presa_giocatore = false
+        player_turn = true
+
+        renderTable()
+        gestisciTurno()
+    }, 1000)
 }
 
 function scopa(giocatore){
@@ -606,4 +751,35 @@ function valutaPresa(carta, presa){
 
 function riavviaGioco(){
     location.reload()
+}
+
+function animazioneCarta(carta, giocatore){
+    const main = document.querySelector("main")
+    const banco = document.getElementsByClassName("div_banco")[0].getBoundingClientRect()
+    const mainRect = main.getBoundingClientRect()
+
+    const img = document.createElement("img")
+
+    img.src = "assets/images/carte/" + carta.valore + "_" + carta.seme + ".jpg"
+    img.classList.add("carta" , "toanimate")
+
+    if(giocatore){
+        const divGiocatore = document.getElementsByClassName("div_giocatore")[0].getBoundingClientRect()
+        img.style.left = (divGiocatore.left + divGiocatore.width  / 2 - mainRect.left) + "px"
+        img.style.top  = (divGiocatore.top  + divGiocatore.height / 2 - mainRect.top - 70)  + "px"
+    } else {
+        img.style.left = (mainRect.width / 2) + "px"
+        img.style.top  = "0px"
+    }
+
+    const targetX = (banco.left + banco.width  / 2) - mainRect.left - img.offsetWidth  / 2 
+    const targetY = (banco.top  + banco.height / 2) - mainRect.top  - img.offsetHeight / 2 - 40
+
+    img.style.setProperty("--tx", `${targetX - parseFloat(img.style.left)}px`)
+    img.style.setProperty("--ty", `${targetY - parseFloat(img.style.top)}px`)
+
+    main.appendChild(img)
+    img.classList.add("vola-al-banco")
+
+    img.addEventListener("animationend", () => img.remove(), { once: true })
 }

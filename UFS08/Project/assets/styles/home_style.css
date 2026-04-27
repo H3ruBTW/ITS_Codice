@@ -184,4 +184,14 @@ a:active {
     }
 }
 
+main {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+.main-title {
+    align-self: center;
+    padding-top: 25px;
+}
 
