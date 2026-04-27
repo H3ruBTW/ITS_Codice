@@ -36,12 +36,14 @@ let giocatore_carte = [];
 let bot_carte = [];
 let giocatore_mazzo = []
 let bot_mazzo = []
-let div_banco_cards = null
-let div_giocatore_cards = null
-let div_bot_cards = null
 
-let player_starts = Math.random() >= 0
+let player_starts = Math.random() >= 0.5
 let player_turn = player_starts
+
+let ultima_presa_giocatore = false
+
+let punti_giocatore = {primiera: 0, "sette bello": 0, carte: 0, ori: 0, scope: 0}
+let punti_bot = {primiera: 0, "sette bello": 0, carte: 0, ori: 0, scope: 0}
 
 startGame();
 
@@ -186,6 +188,25 @@ function gestisciTurno(){
     carta_selezionata = null
     aggiornaBottone()
 
+    if(giocatore_carte.length === 0 && bot_carte.length === 0){
+        if(mazzo.isEmpty){
+            if(ultima_presa_giocatore){
+                banco_carte.forEach(c => giocatore_mazzo.push(c))
+            } else {
+                banco_carte.forEach(c => bot_mazzo.push(c))
+            }
+
+            banco_carte = []
+            renderTable()
+
+            setTimeout(endGame, 1500)
+            return
+        } else {
+            distribuisci()
+            renderTable()
+        }
+    }
+
     if (player_turn) {
         console.log("Turno: GIOCATORE")
         giocatoreGioca()
@@ -193,6 +214,125 @@ function gestisciTurno(){
         console.log("Turno: BOT")
         setTimeout(botGioca, 800)
     }
+}
+
+function endGame(){
+    if(giocatore_mazzo.length > 20)
+        punti_giocatore.carte++
+    else if(bot_mazzo.length > 20)
+        punti_bot.carte++
+
+    switch (calcolaPrimiera()) {
+        case "g":
+            punti_giocatore.primiera++
+            break;
+
+        case "b":
+            punti_bot.primiera++
+            break
+
+        default:
+            break
+    }
+
+    if(giocatore_mazzo.some(c => c.seme === "denari" && c.valore === 7))
+        punti_giocatore["sette bello"]++
+
+    if(bot_mazzo.some(c => c.seme === "denari" && c.valore === 7))
+        punti_bot["sette bello"]++
+
+    if(giocatore_mazzo.filter(c => c.seme === "denari").length > 
+                    bot_mazzo.filter(c => c.seme === "denari").length)
+        punti_giocatore.ori++
+
+    if(giocatore_mazzo.filter(c => c.seme === "denari").length < 
+                bot_mazzo.filter(c => c.seme === "denari").length)
+        punti_bot.ori++
+
+    let vincitore = document.getElementById("vincitore")
+
+    let puntiG = 0
+    let puntiB = 0
+
+    Object.values(punti_giocatore).forEach(p => puntiG += p)
+    Object.values(punti_bot).forEach(p => puntiB += p)
+
+    if(puntiG > puntiB)
+        vincitore.textContent = "Hai vinto"
+    else if(puntiB > puntiG)
+        vincitore.textContent = "Hai perso"
+    else 
+        vincitore.textContent = "Pareggio"
+
+    let p = document.createElement("p")
+    p.innerHTML += "Punti totali: " + puntiG + "<br>"
+    p.innerHTML += "Primiera: " + punti_giocatore.primiera + "<br>"
+    p.innerHTML += "Sette bello: " + punti_giocatore["sette bello"] + "<br>"
+    p.innerHTML += "Carte: " + punti_giocatore.carte + "<br>"
+    p.innerHTML += "Denari: " + punti_giocatore.ori + "<br>"
+    p.innerHTML += "Scope: " + punti_giocatore.scope
+
+    let div_punti_g = document.getElementById("points_g")
+    div_punti_g.appendChild(p)
+
+    p = document.createElement("p")
+    p.innerHTML += "Punti totali: " + puntiB + "<br>"
+    p.innerHTML += "Primiera: " + punti_bot.primiera + "<br>"
+    p.innerHTML += "Sette bello: " + punti_bot["sette bello"] + "<br>"
+    p.innerHTML += "Carte: " + punti_bot.carte + "<br>"
+    p.innerHTML += "Denari: " + punti_bot.ori + "<br>"
+    p.innerHTML += "Scope: " + punti_bot.scope
+
+    let div_punti_b = document.getElementById("points_b")
+    div_punti_b.appendChild(p)
+
+    let div_punti = document.getElementById("end_game")
+    div_punti.style.visibility = "visible"
+}
+
+function calcolaPrimiera(){
+    let bestGioc = {bastoni: 0, coppe: 0, denari: 0, spade: 0}
+    let bestBot = {bastoni: 0, coppe: 0, denari: 0, spade: 0}
+
+    const PUNTI_PRIMIERA = {
+        7: 21,
+        6: 18,
+        1: 16,
+        5: 15,
+        4: 14,
+        3: 13,
+        2: 12,
+        8: 10,
+        9: 10,
+        10: 10
+    }
+
+    giocatore_mazzo.forEach(c => {
+        const seme = c.seme
+
+        if(bestGioc[seme] < PUNTI_PRIMIERA[c.valore])
+            bestGioc[seme] = PUNTI_PRIMIERA[c.valore]
+    })
+
+    bot_mazzo.forEach(c => {
+        const seme = c.seme
+
+        if(bestBot[seme] < PUNTI_PRIMIERA[c.valore])
+            bestBot[seme] = PUNTI_PRIMIERA[c.valore]
+    })
+
+    let primieraGioc = 0
+    let primieraBot = 0
+
+    Object.values(bestGioc).forEach(p => primieraGioc += p)
+    Object.values(bestBot).forEach(p => primieraBot += p)
+
+    if(primieraGioc > primieraBot)
+        return "g"
+    else if(primieraBot > primieraGioc)
+        return "b"
+
+    return null
 }
 
 function calcolaPrese(carta, banco) {
@@ -252,14 +392,18 @@ function cartaAlBanco(carta) {
 function eseguiPresa(carta, scelta){
     giocatore_mazzo.push(carta)
     
-    scelta.forEach(element => {
-        giocatore_mazzo.push(element)
+    scelta.forEach(c => {
+        giocatore_mazzo.push(c)
     })
 
     giocatore_carte = giocatore_carte.filter(c => c !== carta)
 
     banco_carte = banco_carte.filter(c => !scelta.includes(c))
 
+    if(banco_carte.length === 0 && (bot_carte.length > 0 || giocatore_carte.length > 0 || !mazzo.isEmpty))
+        scopa(true)
+
+    ultima_presa_giocatore = true
     carta_selezionata = null
     player_turn = false
 
@@ -292,4 +436,174 @@ function mostraOpzioni(carta, scelte){
     })
 
     div_options[0].style.visibility = "visible"
+}
+
+function botGioca(){
+    const mossa = calcolaMossaBot()
+
+    if(mossa.scelta === "none"){
+        botCartaAlBanco(mossa.carta)
+    } else {
+        botEffettuaPresa(mossa.carta, mossa.scelta)
+    }
+}
+
+function botCartaAlBanco(carta){
+    // rimuove la carta dalla mano del giocatore
+    bot_carte = bot_carte.filter(c => c !== carta)
+    
+    // aggiunge la carta al banco
+    banco_carte.push(carta)
+
+    player_turn = true
+
+    renderTable()
+    gestisciTurno()
+}
+
+function botEffettuaPresa(carta, presa){
+    bot_mazzo.push(carta)
+    
+    presa.forEach(c => {
+        bot_mazzo.push(c)
+    })
+
+    bot_carte = bot_carte.filter(c => c !== carta)
+
+    banco_carte = banco_carte.filter(c => !presa.includes(c))
+
+    if(banco_carte.length === 0 && (bot_carte.length > 0 || giocatore_carte.length > 0 || !mazzo.isEmpty))
+        scopa(false)
+
+    ultima_presa_giocatore = false
+    player_turn = true
+
+    renderTable()
+    gestisciTurno()
+}
+
+function scopa(giocatore){
+    let div
+    if(giocatore){
+        punti_giocatore.scope++
+        div = document.getElementById("scopa_g")
+    } else {
+        punti_bot.scope++
+        div = document.getElementById("scopa_b")
+    }
+
+    div.classList.remove("dissolvenza")
+    void div.offsetWidth
+    div.classList.add("dissolvenza")
+}
+
+function calcolaMossaBot(){
+    let migliore_mossa = null
+    let migliore_score = -Infinity
+
+    for(let i=0; i<bot_carte.length; i++){
+        const carta = bot_carte[i]
+        const opzioni = calcolaPrese(carta, banco_carte)
+
+        if(opzioni.length === 0){
+            const score = valutaButto(carta)
+
+            if(score > migliore_score){
+                migliore_mossa = {carta: carta, scelta: "none"}
+                migliore_score = score
+            }
+
+        } else {
+            opzioni.forEach(presa => {
+                const score = valutaPresa(carta, presa)
+
+                if(score > migliore_score){
+                    migliore_mossa = {carta: carta, scelta: presa}
+                    migliore_score = score
+                }
+            })
+        }
+    }
+
+    return migliore_mossa
+}
+
+function valutaButto(carta){
+    let score = 0
+
+    if(carta.seme === "denari") 
+        score -= 15
+
+    switch (carta.valore) {
+        case 7:
+            score -= 15
+            break;
+
+        case 6:
+            score -= 10
+            break
+
+        case 1:
+            score -= 9
+            break
+    
+        default:
+            break;
+    }
+
+    score -= carta.valore
+
+    return score
+}
+
+function valutaPresa(carta, presa){
+    let score = 0
+
+    const banco_rimasto = banco_carte.filter(c => 
+        !presa.some(p => p.seme === c.seme && p.valore === c.valore)
+    )
+
+    //scopa
+    if(banco_rimasto.length === 0)
+        score += 100
+
+    //piu carte prende meglio è
+    score += presa.length * 5
+
+    //settebello
+    if(carta.seme === "denari" && carta.valore === 7)
+        score += 30
+    if(presa.some(c => c.seme === "denari" && c.valore === 7))
+        score += 30
+
+    const lascia_7_denari = banco_rimasto.some(c => c.seme === "denari" && c.valore === 7)
+    if(lascia_7_denari) 
+        score -= 25  // stai regalando potenzialmente il settebello
+
+    //denari
+    if(carta.seme === "denari")
+        score += 8
+    score += presa.filter(c => c.seme === "denari").length * 8;
+
+    //primiera
+    if(carta.valore === 7)
+        score += 10
+    if(presa.some(c => c.valore === 7))
+        score += 10
+    if(carta.valore === 6)
+        score += 8
+    if(presa.some(c => c.valore === 6))
+        score += 8
+    if(carta.valore === 1)
+        score += 6
+    if(presa.some(c => c.valore === 1))
+        score += 6
+
+    score -= carta.valore
+
+    return score
+}
+
+function riavviaGioco(){
+    location.reload()
 }
