@@ -2,4 +2,7 @@
     "C_Cpp.default.compilerPath": "C:/msys64/ucrt64/bin/gcc.exe",
     "java.configuration.updateBuildConfiguration": "interactive",
     "java.search.scope": "all",
+    "java.project.referencedLibraries": [
+        "**/lib/**/*.jar"
+    ]
 }
