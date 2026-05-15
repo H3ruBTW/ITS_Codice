@@ -1,0 +1,199 @@
+body {
+    padding: 0;
+    margin: 0;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+.main {
+    margin-top: 20px;
+    margin-left: 20px;
+    margin-right: 20px;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    background-color: rgb(182, 182, 182);
+    height: max-content;
+    width: calc(100%-20px);
+    min-height:calc(100vh - 20px);
+    display: flex;
+}
+
+.div-vert-nav {
+    position: fixed;
+    display: flex;
+    border-right: 1px solid black;
+    width: 250px;
+    height:calc(100vh - 20px);
+    padding: 10px;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.top button {
+    width: 200px;
+    height: 40px;
+    text-align: end;
+}
+
+.top {
+    width: 100%;
+}
+
+.logo-img {
+    width: 100%;
+    height: 75px;
+    border: 1px solid black;
+    object-fit: cover;
+}
+
+.nav_bar {
+    margin-top: 50px;
+    display: flex;
+    flex-direction: column;
+    align-items: end;
+    gap: 10px;
+}
+
+.div-others {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.div-others button {
+    width: 125px;
+    height: 40px;
+}
+
+.main-choose {
+    position: fixed;
+    display: flex;
+    border-left: 1px solid black;
+    width: 300px;
+    height:calc(100vh - 20px);
+    padding: 10px;
+    right: 20px;
+}
+
+.main-opere {
+    margin-left: 250px;
+    margin-right: 300px;
+    display: flex;
+    flex-direction: column;
+}
+
+.main-opere .opere-wrapper {
+    display: flex;
+    padding: 30px;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.main-opere .filter {
+    display: flex;
+    padding: 30px;
+    flex-wrap: wrap;
+    gap: 20px;
+    width: 100%;
+}
+
+.filter .add-search {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.add-search button {
+    width: 200px;
+}
+
+.filter .other-filters{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+#add {
+    justify-self: end;
+}
+
+.opera-card{
+    display: flex;
+    width: 250px;
+    height: 300px;
+    border: 1px solid black;
+    flex-direction: column;
+    padding: 10px;
+    justify-content: space-between;
+    border-radius: 10px;
+    background-color: grey;
+}
+
+.opera-card .info-gen{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.opera-card .operations{
+    display: flex;
+    flex-direction: column;
+    text-align: end;
+    gap: 10px;
+}
+
+.opera-card .operations hr{
+    width: 100%;
+}
+
+.img-card {
+    align-self: center;
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+    border: 1px solid black;
+}
+
+.choose-content{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 15px;
+}
+
+.choose-panel{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+}
+
+.hidden{
+    display: none;
+}
+
+.choose-actions{
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.choose-panel input{
+    width: 100%;
+    height: 35px;
+    padding: 8px;
+}
+
+.opera-nome{
+    margin: 0;
+    font-size: 20px;
+}
+
+.opera-card .info-gen p{
+    margin: 0;
+}

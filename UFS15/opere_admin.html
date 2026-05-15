@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Opere</title>
+    <link href="css/opere_admin.css" rel="stylesheet">
+    <script src="js/crea_card.js" defer></script>
+    <script src="js/opere_admin.js" defer></script>
+</head>
+<body>
+    <main class="main">
+        <div class="div-vert-nav">
+            <div class="top">
+                <img class="logo-img" src="img/logo.png" alt="logo">
+                <nav class="nav_bar">
+                    <a><button>Dashboard</button></a>
+                    <a><button>Gestione Opere</button></a>
+                    <a><button>Gestione Personale</button></a>
+                    <a><button>Gestione Visitatori</button></a>
+                    <a><button>Mostre/Eventi</button></a>
+                </nav>
+            </div>
+            <div class="div-others">
+                <a><button>Impostazioni</button></a>
+                <a><button>Account</button></a>
+            </div>
+        </div>
+        <div class="main-opere">
+            <div class="filter">
+                <div class="add-search">
+                    <div>
+                        <label>Barra di ricerca</label>
+                        <input type="text">
+                    </div>
+                    <div>
+                        <button id="search">Applica filtri</button>
+                        <button id="add">Aggiungi un opera</button>
+                    </div>
+                    
+                </div>
+                <div class="other-filters">
+                    <div>
+                        <label>Autore</label>
+                        <input type="text">
+                    </div>
+                    <div>
+                        <label>Anno da</label>
+                        <input type="text">
+                    </div>
+                    <div>
+                        <label>Anno a</label>
+                        <input type="text">
+                    </div>
+                    
+                </div>
+            </div>
+            <div class="opere-wrapper">
+                
+            </div>
+            
+        </div>
+        <div class="main-choose">
+            <div class="choose-content">
+                <div id="choose-default">
+                    <h2>Seleziona un'azione</h2>
+                    <p>Clicca su modifica o cancella da una card.</p>
+                </div>
+
+                <div id="choose-modifica" class="choose-panel hidden">
+                    <h2>Modifica opera</h2>
+
+                    <label for="modifica-nome">Nome</label>
+                    <input id="modifica-nome" type="text">
+
+                    <label for="modifica-autore">Autore</label>
+                    <input id="modifica-autore" type="text">
+
+                    <label for="modifica-anno">Anno</label>
+                    <input id="modifica-anno" type="number">
+
+                    <div class="choose-actions">
+                        <button type="button" class="btn-annulla-choose">Annulla</button>
+                        <button type="button">Salva</button>
+                    </div>
+                </div>
+
+                <div id="choose-cancella" class="choose-panel hidden">
+                    <h2>Cancella opera</h2>
+                    <p id="delete-message">Vuoi davvero cancellare questa opera?</p>
+
+                    <div class="choose-actions">
+                        <button type="button" class="btn-annulla-choose">Annulla</button>
+                        <button type="button">Conferma cancellazione</button>
+                    </div>
+                </div>
+
+                <div id="choose-aggiungi" class="choose-panel hidden">
+                    <h2>Aggiungi opera</h2>
+
+                    <label for="aggiungi-nome">Nome</label>
+                    <input id="aggiungi-nome" type="text">
+
+                    <label for="aggiungi-autore">Autore</label>
+                    <input id="aggiungi-autore" type="text">
+
+                    <label for="aggiungi-anno">Anno</label>
+                    <input id="aggiungi-anno" type="number">
+
+                    <label for="aggiungi-img">Immagine</label>
+                    <input id="aggiungi-img" type="file" accept="image/*">
+
+                    <div class="choose-actions">
+                        <button type="button" class="btn-annulla-choose">Annulla</button>
+                        <button type="button">Aggiungi</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
