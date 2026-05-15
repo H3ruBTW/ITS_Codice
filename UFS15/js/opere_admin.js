@@ -24,8 +24,9 @@ document.querySelectorAll(".btn-modifica").forEach(btn => {
         const nomeEl = card.querySelector(".opera-nome");
         const autoreEl = card.querySelector(".autore");
         const annoEl = card.querySelector(".anno");
+        const statoEl = card.querySelector(".stato-opera");
 
-        if (!nomeEl || !autoreEl || !annoEl) return;
+        if (!nomeEl || !autoreEl || !annoEl || !statoEl) return;
 
         resetChoose();
         chooseModifica.classList.remove("hidden");
@@ -33,7 +34,21 @@ document.querySelectorAll(".btn-modifica").forEach(btn => {
         document.getElementById("modifica-nome").value = nomeEl.textContent.trim();
         document.getElementById("modifica-autore").value = autoreEl.textContent.trim();
         document.getElementById("modifica-anno").value = annoEl.textContent.trim();
+
+        document.getElementById("modifica-disattivato").checked =
+            statoEl.textContent.trim().toLowerCase() === "disattivata";
     });
+});
+
+addBtn.addEventListener("click", function () {
+    resetChoose();
+    chooseAggiungi.classList.remove("hidden");
+
+    document.getElementById("aggiungi-nome").value = "";
+    document.getElementById("aggiungi-autore").value = "";
+    document.getElementById("aggiungi-anno").value = "";
+    document.getElementById("aggiungi-img").value = "";
+    document.getElementById("aggiungi-disattivato").checked = false;
 });
 
 document.querySelectorAll(".btn-cancella").forEach(btn => {
@@ -58,14 +73,6 @@ document.querySelectorAll(".btn-annulla-choose").forEach(btn => {
     });
 });
 
-addBtn.addEventListener("click", function () {
-    resetChoose();
-    chooseAggiungi.classList.remove("hidden");
 
-    document.getElementById("aggiungi-nome").value = "";
-    document.getElementById("aggiungi-autore").value = "";
-    document.getElementById("aggiungi-anno").value = "";
-    document.getElementById("aggiungi-img").value = "";
-});
 
 openChooseDefault();

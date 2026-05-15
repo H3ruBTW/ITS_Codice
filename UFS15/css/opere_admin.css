@@ -124,8 +124,8 @@ body {
 
 .opera-card{
     display: flex;
-    width: 250px;
-    height: 300px;
+    width: 280px;
+    height: 350px;
     border: 1px solid black;
     flex-direction: column;
     padding: 10px;
@@ -196,4 +196,16 @@ body {
 
 .opera-card .info-gen p{
     margin: 0;
+}
+
+.toggle-field{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    width: 100%;
+}
+
+.stato-opera{
+    font-weight: bold;
 }

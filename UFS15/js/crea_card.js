@@ -3,28 +3,38 @@ const opereFake = [
         nome: "Notte stellata",
         autore: "Vincent van Gogh",
         anno: "1889",
-        img: "img/opera1.jpg"
+        img: "img/opera1.jpg",
+        stato: "Attiva"
     },
     {
-        nome: "La Gioconda",
-        autore: "Leonardo da Vinci",
-        anno: "1503",
-        img: "img/opera2.jpg"
+        nome: "Installazione urbana",
+        autore: "Mario Rossi; Luca Bianchi",
+        anno: "2021",
+        img: "img/opera2.jpg",
+        stato: "Disattivata"
     },
     {
-        nome: "L'urlo",
-        autore: "Edvard Munch",
-        anno: "1893",
-        img: "img/opera3.jpg"
+        nome: "Visioni contemporanee",
+        autore: "Anna Verdi; Chiara Neri; Paolo Galli",
+        anno: "2024",
+        img: "img/opera3.jpg",
+        stato: "Attiva"
     },
     {
         nome: "Guernica",
         autore: "Pablo Picasso",
         anno: "1937",
-        img: "img/opera4.jpg"
+        img: "img/opera4.jpg",
+        stato: "Disattivata"
+    },
+    {
+        nome: "Opera collettiva",
+        autore: "Elisa Fontana; Marco Riva",
+        anno: "2019",
+        img: "img/opera5.jpg",
+        stato: "Attiva"
     }
 ];
-
 const opereWrapper = document.querySelector(".opere-wrapper");
 
 function creaCard(opera) {
@@ -36,6 +46,7 @@ function creaCard(opera) {
                 <h3 class="opera-nome">${opera.nome}</h3>
                 <p><strong>Autore:</strong> <span class="autore">${opera.autore}</span></p>
                 <p><strong>Anno:</strong> <span class="anno">${opera.anno}</span></p>
+                <p><strong>Stato:</strong> <span class="stato-opera">${opera.stato}</span></p>
             </div>
 
             <div class="operations">
