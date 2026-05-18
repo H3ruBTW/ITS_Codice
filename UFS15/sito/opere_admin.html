@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Opere</title>
+    <link href="css/opere_admin.css" rel="stylesheet">
+    <script src="js/crea_card.js" defer></script>
+    <script src="js/opere_admin.js" defer></script>
+</head>
+<body>
+    <main class="main">
+        <div class="div-vert-nav">
+            <div class="top">
+                <img class="logo-img" src="img/logo.png" alt="logo">
+                <nav class="nav_bar">
+                    <a><button>Dashboard</button></a>
+                    <a><button>Gestione Opere</button></a>
+                    <a><button>Gestione Personale</button></a>
+                    <a><button>Gestione Visitatori</button></a>
+                    <a><button>Mostre/Eventi</button></a>
+                </nav>
+            </div>
+            <div class="div-others">
+                <a><button>Account</button></a>
+            </div>
+        </div>
+        <div class="main-opere">
+            <form id="form-filtri">
+                <div class="filter">
+                    <div class="add-search">
+                        <div>
+                            <label>Barra di ricerca</label>
+                            <input type="text">
+                        </div>
+                        <div>
+                            <button id="search" type="submit">Applica filtri</button>
+                            <button id="add" type="button">Aggiungi un opera</button>
+                        </div>
+                        
+                    </div>
+                    <div class="other-filters">
+                        <div>
+                            <label>Autore</label>
+                            <input type="text">
+                        </div>
+                        <div>
+                            <label>Anno Creazione da</label>
+                            <input type="number">
+                        </div>
+                        <div>
+                            <label>Anno Creazione a</label>
+                            <input type="number">
+                        </div>
+                        
+                    </div>
+                </div>
+            </form>
+            
+            <div class="opere-wrapper">
+                
+            </div>
+            
+        </div>
+        <div class="main-choose">
+            <div class="choose-content">
+                <div id="choose-default">
+                    <h2>Seleziona un'azione</h2>
+                    <p>Clicca su modifica o cancella da una card.</p>
+                </div>
+
+                <form id="form-aggiungi-opera">
+                    <div id="choose-aggiungi" class="choose-panel hidden">
+
+                        <h2>Aggiungi opera</h2>
+
+                        <label for="aggiungi-nome">Nome</label>
+                        <input id="aggiungi-nome" type="text" required minlength="2" maxlength="100">
+
+                        <label for="aggiungi-anno">Anno</label>
+                        <input id="aggiungi-anno" type="number" required min="1000" max="9999">
+
+                        <label>Autori</label>
+                        <div id="aggiungi-autori-wrapper" class="autori-wrapper"></div>
+                        <button type="button" id="aggiungi-autore-btn">Aggiungi autore</button>
+
+                        <label for="aggiungi-img">Immagine</label>
+                        <input id="aggiungi-img" type="file" accept="image/*" required>
+
+                        <label for="aggiungi-descrizione">Descrizione</label>
+                        <textarea id="aggiungi-descrizione" rows="5" minlength="10" maxlength="300" required></textarea>
+
+                        <label for="aggiungi-stanza">Stanza</label>
+                        <select id="aggiungi-stanza" required>
+                            <option value="">Seleziona una stanza</option>
+                            <option value="ST01">Sala Impressionisti</option>
+                            <option value="ST02">Sala Reperti Storici</option>
+                            <option value="ST03">Sala Arte Contemporanea</option>
+                        </select>
+
+                        <label class="toggle-field" for="aggiungi-disattivato">
+                            <span>Disattivata</span>
+                            <input id="aggiungi-disattivato" type="checkbox">
+                        </label>
+
+                        <div class="choose-actions">
+                            <button type="button" class="btn-annulla-choose">Annulla</button>
+                            <button type="submit">Crea</button>
+                        </div>
+                    </div>
+                </form>
+
+                <form id="form-modifica-opera">
+                    <div id="choose-modifica" class="choose-panel hidden">
+
+                        <h2>Modifica opera</h2>
+
+                        <label for="modifica-id">ID Opera</label>
+                        <input id="modifica-id" type="text" readonly>
+
+                        <label for="modifica-nome">Nome</label>
+                        <input id="modifica-nome" type="text" required minlength="2" maxlength="100">
+
+                        <label>Autori</label>
+                        <div id="modifica-autori-wrapper" class="autori-wrapper"></div>
+                        <button type="button" id="modifica-autore-btn">Aggiungi autore</button>
+
+                        <label for="modifica-anno">Anno</label>
+                        <input id="modifica-anno" type="number" required min="1000" max="9999">
+
+                        <label for="modifica-img">Immagine</label>
+                        <input id="modifica-img" type="file" accept="image/*">
+
+                        <label for="modifica-descrizione">Descrizione</label>
+                        <textarea id="modifica-descrizione" rows="5" minlength="10" maxlength="300" required></textarea>
+
+                        <label for="modifica-stanza">Stanza</label>
+                        <select id="modifica-stanza" required>
+                            <option value="">Seleziona una stanza</option>
+                            <option value="ST01">Sala Impressionisti</option>
+                            <option value="ST02">Sala Reperti Storici</option>
+                            <option value="ST03">Sala Arte Contemporanea</option>
+                        </select>
+
+                        <label class="toggle-field" for="modifica-restauro">
+                            <span>In restauro</span>
+                            <input id="modifica-restauro" type="checkbox">
+                        </label>
+
+                        <label class="toggle-field" for="modifica-disattivato">
+                            <span>Disattivata</span>
+                            <input id="modifica-disattivato" type="checkbox">
+                        </label>
+
+                        <div class="choose-actions">
+                            <button type="button" class="btn-annulla-choose">Annulla</button>
+                            <button type="submit">Salva</button>
+                        </div>
+
+                    </div>
+                </form>
+
+                <div id="choose-cancella" class="choose-panel hidden">
+                    <h2>Cancella opera</h2>
+                    <p id="delete-message">Vuoi davvero cancellare questa opera?</p>
+
+                    <div class="choose-actions">
+                        <button type="button" class="btn-annulla-choose">Annulla</button>
+                        <button type="button">Conferma cancellazione</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

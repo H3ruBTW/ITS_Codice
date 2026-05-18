@@ -69,19 +69,8 @@ body {
     height: 40px;
 }
 
-.main-choose {
-    position: fixed;
-    display: flex;
-    border-left: 1px solid black;
-    width: 300px;
-    height:calc(100vh - 20px);
-    padding: 10px;
-    right: 20px;
-}
-
 .main-opere {
     margin-left: 250px;
-    margin-right: 300px;
     display: flex;
     flex-direction: column;
 }
@@ -124,8 +113,8 @@ body {
 
 .opera-card{
     display: flex;
-    width: 280px;
-    height: 350px;
+    width: 350px;
+    min-height: 250px;
     border: 1px solid black;
     flex-direction: column;
     padding: 10px;
@@ -140,53 +129,12 @@ body {
     gap: 10px;
 }
 
-.opera-card .operations{
-    display: flex;
-    flex-direction: column;
-    text-align: end;
-    gap: 10px;
-}
-
-.opera-card .operations hr{
-    width: 100%;
-}
-
 .img-card {
     align-self: center;
-    width: 100px;
-    height: 100px;
+    width: 150px;
+    height: 150px;
     object-fit: contain;
     border: 1px solid black;
-}
-
-.choose-content{
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    gap: 15px;
-}
-
-.choose-panel{
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    width: 100%;
-}
-
-.hidden{
-    display: none;
-}
-
-.choose-actions{
-    display: flex;
-    gap: 10px;
-    margin-top: 10px;
-}
-
-.choose-panel input{
-    width: 100%;
-    height: 35px;
-    padding: 8px;
 }
 
 .opera-nome{
@@ -196,16 +144,4 @@ body {
 
 .opera-card .info-gen p{
     margin: 0;
-}
-
-.toggle-field{
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    width: 100%;
-}
-
-.stato-opera{
-    font-weight: bold;
 }
