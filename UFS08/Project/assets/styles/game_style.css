@@ -97,7 +97,35 @@ a:active {
         margin: 0;
     }
 
-    
+    .div_end_game {
+        width: 600px !important;
+    }
+
+    .points {
+        flex-direction: row !important;
+        justify-content: space-around;
+        width: 100%;
+    }
+
+    .points > * {
+        width: 45%;
+        text-align: left;
+    }
+
+    .win #points_g {
+        border-right: 3px solid #409243;
+        border-bottom: 0px !important;
+    }
+
+    .lose #points_g {
+        border-right: 3px solid rgb(117, 0, 0);
+        border-bottom: 0px !important;
+    }
+
+    .draw #points_g {
+        border-right: 3px solid #484848;
+        border-bottom: 0px !important;
+    }
 }
 
 @media screen and (min-width: 640px) and (max-width: 980px) {
@@ -117,6 +145,14 @@ a:active {
     .play_button:hover:enabled {
         background-color: #d3d3d3 !important;
         color:#4CAF50 !important;
+    }
+
+    .lose button:hover {
+        background-color: rgb(117, 0, 0) !important;
+    }
+
+    .draw button:hover {
+        background-color: #484848 !important;
     }
 }
 
@@ -187,7 +223,7 @@ main {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 40px;
+    gap: 20px;
 }
 
 .banco_carte {
@@ -350,7 +386,6 @@ main {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color:#4CAF50;
     border: 1px solid #ffffff;
     border-radius: 10px;
     padding: 1em;
@@ -358,11 +393,55 @@ main {
     flex-direction: column;
     gap: 1em;
     width: 300px;
-    min-height: 400px;
+    min-height: fit-content;
     align-items: center;
     text-align: center;
     opacity: 0;
     pointer-events: none;
+}
+
+.win {
+    background-color:#4CAF50;
+}
+
+.lose {
+    background-color: rgb(164, 0, 0);
+}
+
+.draw {
+    background-color: #606060;
+}
+
+#points_g {
+    padding-bottom: 10px;
+}
+
+.win #points_g {
+    border-bottom: 3px solid #409243;
+}
+
+.lose #points_g {
+    border-bottom: 3px solid rgb(117, 0, 0);
+}
+
+.draw #points_g {
+    border-bottom: 3px solid #484848;
+}
+
+.lose button {
+    background-color: rgb(125, 0, 0) !important;
+}
+
+.lose button:active {
+    background-color: rgb(99, 0, 0) !important;
+}
+
+.draw button {
+    background-color: #535353 !important;
+}
+
+.draw button:active {
+    background-color: #3f3f3f !important;
 }
 
 .fadein {
@@ -376,6 +455,7 @@ main {
     100% {opacity: 1;}
 }
 
+/*
 .points {
     display: flex;
     justify-content: space-evenly;
@@ -387,6 +467,13 @@ main {
 .points > * {
     width: 45%;
     text-align: left;
+}*/
+
+.points {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    gap: 10px;
 }
 
 @keyframes volaAlBanco {

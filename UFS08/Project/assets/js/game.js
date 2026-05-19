@@ -379,15 +379,19 @@ function endGame(){
     Object.values(punti_giocatore).forEach(p => puntiG += p)
     Object.values(punti_bot).forEach(p => puntiB += p)
 
-    if(puntiG > puntiB)
+    if(puntiG > puntiB){
         vincitore.textContent = "Hai vinto"
-    else if(puntiB > puntiG)
+        vincitore.classList.add("win")
+    } else if(puntiB > puntiG){
         vincitore.textContent = "Hai perso"
-    else 
+        vincitore.classList.add("lose")
+    } else {
         vincitore.textContent = "Pareggio"
+        vincitore.classList.add("draw")
+    }
 
     let p = document.createElement("p")
-    p.innerHTML += "Punti totali: " + puntiG + "<br>"
+    p.innerHTML += "<u>Punti totali: " + puntiG + "</u><br>"
     p.innerHTML += "Primiera: " + punti_giocatore.primiera + "<br>"
     p.innerHTML += "Sette bello: " + punti_giocatore["sette bello"] + "<br>"
     p.innerHTML += "Carte: " + punti_giocatore.carte + "<br>"
@@ -398,7 +402,7 @@ function endGame(){
     div_punti_g.appendChild(p)
 
     p = document.createElement("p")
-    p.innerHTML += "Punti totali: " + puntiB + "<br>"
+    p.innerHTML += "<u>Punti totali: " + puntiB + "</u><br>"
     p.innerHTML += "Primiera: " + punti_bot.primiera + "<br>"
     p.innerHTML += "Sette bello: " + punti_bot["sette bello"] + "<br>"
     p.innerHTML += "Carte: " + punti_bot.carte + "<br>"
@@ -526,6 +530,8 @@ function eseguiPresa(carta, scelta){
 
     renderTable()
 
+    higlightCarte(scelta)
+
     animazioneCarta(carta, true)
 
     setTimeout(() => {
@@ -607,6 +613,8 @@ function botEffettuaPresa(carta, presa){
 
     renderTable()
 
+    higlightCarte(presa)
+
     animazioneCarta(carta, false)
 
     setTimeout(() => {
@@ -625,6 +633,19 @@ function botEffettuaPresa(carta, presa){
         renderTable()
         gestisciTurno()
     }, 1000)
+}
+
+function higlightCarte(presa){
+    const carte = document.querySelectorAll("#banco_c .carta")
+    
+    presa.forEach(cartaPresa => {
+        const index = banco_carte.findIndex(c => 
+            c.seme === cartaPresa.seme && c.valore === cartaPresa.valore
+        );
+
+        carte[index].classList.add("highlighted");
+        
+    });
 }
 
 function scopa(giocatore){
