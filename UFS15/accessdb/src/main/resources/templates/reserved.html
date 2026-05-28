@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Accesso</h1>
+    <p th:text="'Nome: ' + ${user.nome}"></p>
+    <p th:text="'Cognome: ' + ${user.cognome}"></p>
+    <p th:text="'Username: ' + ${user.username}"></p>
+    <a href="/logout"><button>Log out</button></a>
+</body>
+</html>

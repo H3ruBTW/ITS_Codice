@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <p th:text="${error}" style="color: red;"></p>
+    <form th:action="@{/accedi}" th:object="${loginForm}" method="post">
+        <p th:if="${#fields.hasErrors('username')}" th:errors="*{username}" style="color: red;"></p><br>
+        <label>Username:</label>
+        <input type="text" th:field="*{username}"><br>
+        
+        <p th:if="${#fields.hasErrors('pass')}" th:errors="*{pass}" style="color: red;"></p><br>
+        <label>Password:</label>
+        <input type="text" th:field="*{pass}"><br><br>
+
+        <button type="submit">Accedi</button><a href="registrati"><button type="button">Registrati</button></a>
+    </form>
+    
+</body>
+</html>

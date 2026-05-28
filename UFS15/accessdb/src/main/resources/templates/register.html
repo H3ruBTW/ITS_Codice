@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <p th:text="${error}" style="color: red;"></p>
+    <form th:action="@{/registrati}" th:object="${utente}" method="post">
+        <p th:if="${#fields.hasErrors('nome')}" th:errors="*{nome}" style="color: red;"><br></p>
+        <label>Nome:</label>
+        <input type="text" th:field="*{nome}"><br>
+        
+        <p th:if="${#fields.hasErrors('cognome')}" th:errors="*{cognome}" style="color: red;"><br></p>
+        <label>Cognome:</label>
+        <input type="text" th:field="*{cognome}"><br>
+
+        <p th:if="${#fields.hasErrors('username')}" th:errors="*{username}" style="color: red;"><br></p>
+        <label>Username:</label>
+        <input type="text" th:field="*{username}"><br>
+        
+        <p th:if="${#fields.hasErrors('pass')}" th:errors="*{pass}" style="color: red;"><br></p>
+        <label>Password:</label>
+        <input type="text" th:field="*{pass}"><br><br>
+
+        <button type="submit">Registrati</button><a href="accedi"><button type="button">Hai gia un'account?</button></a>
+    </form>
+    
+</body>
+</html>
