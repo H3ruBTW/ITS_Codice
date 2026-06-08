@@ -37,13 +37,23 @@ let bot_carte = [];
 let giocatore_mazzo = []
 let bot_mazzo = []
 
-let player_starts = Math.random() >= 0
+let player_starts = Math.random() >= .5
 let player_turn = player_starts
 
 let ultima_presa_giocatore = false
 
 let punti_giocatore = {primiera: 0, "sette bello": 0, carte: 0, ori: 0, scope: 0}
 let punti_bot = {primiera: 0, "sette bello": 0, carte: 0, ori: 0, scope: 0}
+
+let div_inizio = document.querySelector("#inizio h2")
+
+if(player_starts){
+    div_inizio.textContent = "Inizi tu"
+} else {
+    div_inizio.textContent = "Inizia il bot"
+}
+
+div_inizio.classList.add("dissolvenza")
 
 startGame();
 
@@ -100,6 +110,8 @@ function distribuisci(){
                 bot_carte.push(mazzo.pesca())
 
                 animazionePescaggio(null, false)
+
+                renderTable()
             }, 1000 + 1000 * i)
             
         } else {            
@@ -116,7 +128,9 @@ function distribuisci(){
 
                 giocatore_carte.push(carta = mazzo.pesca())
 
-                animazionePescaggio(carta, true)                
+                animazionePescaggio(carta, true) 
+                
+                renderTable()
             }, 1000 + 1000 * i)
         }
     }
@@ -344,7 +358,9 @@ function endGame(){
     else if(bot_mazzo.length > 20)
         punti_bot.carte++
 
-    switch (calcolaPrimiera()) {
+    let primiera = calcolaPrimiera()
+
+    switch (primiera.ris) {
         case "g":
             punti_giocatore.primiera++
             break;
@@ -363,8 +379,11 @@ function endGame(){
     if(bot_mazzo.some(c => c.seme === "denari" && c.valore === 7))
         punti_bot["sette bello"]++
 
-    if(giocatore_mazzo.filter(c => c.seme === "denari").length > 
-                    bot_mazzo.filter(c => c.seme === "denari").length)
+    let ori_g
+    let ori_b
+
+    if((ori_g = giocatore_mazzo.filter(c => c.seme === "denari").length) > 
+                    (ori_b = bot_mazzo.filter(c => c.seme === "denari").length))
         punti_giocatore.ori++
 
     if(giocatore_mazzo.filter(c => c.seme === "denari").length < 
@@ -372,6 +391,7 @@ function endGame(){
         punti_bot.ori++
 
     let vincitore = document.getElementById("vincitore")
+    let end_game_div = document.getElementById("end_game")
 
     let puntiG = 0
     let puntiB = 0
@@ -381,33 +401,34 @@ function endGame(){
 
     if(puntiG > puntiB){
         vincitore.textContent = "Hai vinto"
-        vincitore.classList.add("win")
+        end_game_div.classList.add("win")
     } else if(puntiB > puntiG){
         vincitore.textContent = "Hai perso"
-        vincitore.classList.add("lose")
+        end_game_div.classList.add("lose")
     } else {
         vincitore.textContent = "Pareggio"
-        vincitore.classList.add("draw")
+        end_game_div.classList.add("draw")
     }
 
     let p = document.createElement("p")
-    p.innerHTML += "<u>Punti totali: " + puntiG + "</u><br>"
-    p.innerHTML += "Primiera: " + punti_giocatore.primiera + "<br>"
-    p.innerHTML += "Sette bello: " + punti_giocatore["sette bello"] + "<br>"
-    p.innerHTML += "Carte: " + punti_giocatore.carte + "<br>"
-    p.innerHTML += "Denari: " + punti_giocatore.ori + "<br>"
-    p.innerHTML += "Scope: " + punti_giocatore.scope
+    p.innerHTML += "<u>Punti totali: " + puntiG + " p.ti</u><br>"
+    p.innerHTML += "Primiera: " + punti_giocatore.primiera + " p.ti {" + primiera.bestGioc.denari + "♦, " + primiera.bestGioc.coppe + "♣, " + primiera.bestGioc.bastoni + "♥, " + primiera.bestGioc.spade + "♠}<br>"
+    p.innerHTML += "Sette bello: " + punti_giocatore["sette bello"] + " p.ti<br>"
+    p.innerHTML += "Carte: " + punti_giocatore.carte + " p.ti [" + giocatore_mazzo.length + "]<br>"
+    p.innerHTML += "Denari: " + punti_giocatore.ori + " p.ti [" + ori_g + "]<br>"
+    p.innerHTML += "Scope: " + punti_giocatore.scope + " p.ti"
 
     let div_punti_g = document.getElementById("points_g")
     div_punti_g.appendChild(p)
 
     p = document.createElement("p")
-    p.innerHTML += "<u>Punti totali: " + puntiB + "</u><br>"
-    p.innerHTML += "Primiera: " + punti_bot.primiera + "<br>"
-    p.innerHTML += "Sette bello: " + punti_bot["sette bello"] + "<br>"
-    p.innerHTML += "Carte: " + punti_bot.carte + "<br>"
-    p.innerHTML += "Denari: " + punti_bot.ori + "<br>"
-    p.innerHTML += "Scope: " + punti_bot.scope
+    p.innerHTML += "<u>Punti totali: " + puntiB + " p.ti</u><br>"
+    p.innerHTML += "Primiera: " + punti_bot.primiera + " p.ti {" + primiera.bestBot.denari + "♦, " + primiera.bestBot.coppe + "♣, " + primiera.bestBot.bastoni + "♥, " + primiera.bestBot.spade + "♠}<br>"
+
+    p.innerHTML += "Sette bello: " + punti_bot["sette bello"] + " p.ti<br>"
+    p.innerHTML += "Carte: " + punti_bot.carte + " p.ti [" + giocatore_mazzo.length + "]<br>"
+    p.innerHTML += "Denari: " + punti_bot.ori + " p.ti [" + ori_b + "]<br>"
+    p.innerHTML += "Scope: " + punti_bot.scope + " p.ti"
 
     let div_punti_b = document.getElementById("points_b")
     div_punti_b.appendChild(p)
@@ -454,11 +475,11 @@ function calcolaPrimiera(){
     Object.values(bestBot).forEach(p => primieraBot += p)
 
     if(primieraGioc > primieraBot)
-        return "g"
+        return {ris: "g", bestGioc, bestBot}
     else if(primieraBot > primieraGioc)
-        return "b"
+        return {ris: "b", bestGioc, bestBot}
 
-    return null
+    return {ris: null, bestGioc, bestBot}
 }
 
 function calcolaPrese(carta, banco) {
