@@ -44,7 +44,8 @@ function creaPunteggioVuoto() {
         "sette bello": 0,
         carte: 0,
         ori: 0,
-        scope: 0
+        scope: 0,
+        napoleone: 0
     };
 }
 
@@ -82,6 +83,18 @@ let risultato_mano_corrente = null;
 let listenerConfirmAggiunto = false;
 let div_inizio = document.querySelector("#inizio h2");
 
+let punti_obiettivo_match = 11; // 11 o 21
+
+let carte_uscite = [];
+
+let memoria_denari = {
+    giocatore: [],
+    bot: []
+};
+
+let intervalHighlightPrese = null;
+let indiceHighlightCorrente = 0;
+
 /*
     Avvio e reset mano
 */
@@ -108,6 +121,13 @@ function inizializzaMano() {
 
     punteggio_mano_giocatore = creaPunteggioVuoto();
     punteggio_mano_bot = creaPunteggioVuoto();
+
+    carte_uscite = [];
+
+    memoria_denari = {
+        giocatore: [],
+        bot: []
+    };
 
     renderTable();
     aggiornaMessaggioInizio();
@@ -225,6 +245,7 @@ function gestisciTurno() {
     let pescaggio = false;
     carta_selezionata = null;
     aggiornaBottone();
+    fermaCicloHighlight();
 
     if (giocatore_carte.length === 0 && bot_carte.length === 0) {
         if (mazzo.isEmpty) {
@@ -279,7 +300,7 @@ function endGame() {
         aggiungiManoAStorico(risultato_mano_corrente, true);
 
         const partitaFinita =
-            (totale_match.giocatore >= 11 || totale_match.bot >= 11) &&
+            (totale_match.giocatore >= punti_obiettivo_match  || totale_match.bot >= punti_obiettivo_match ) &&
             totale_match.giocatore !== totale_match.bot;
 
         if (partitaFinita) {
@@ -478,18 +499,25 @@ function giocatoreGioca() {
 
     giocatore_carte.forEach((element, i) => {
         imgs[i].classList.add("toplay");
+
         imgs[i].addEventListener("click", () => {
             if (carta_selezionata?.element === element) {
                 imgs[i].classList.remove("selected");
                 carta_selezionata = null;
+                fermaCicloHighlight();
             } else {
                 if (carta_selezionata) {
                     carta_selezionata.img.classList.remove("selected");
                 }
 
+                imgs.forEach(img => img.classList.remove("selected"));
                 imgs[i].classList.add("selected");
                 carta_selezionata = { element, img: imgs[i] };
+
+                const prese = calcolaPrese(element, banco_carte);
+                avviaCicloHighlight(prese);
             }
+
             aggiornaBottone();
         });
     });
@@ -501,6 +529,8 @@ function aggiornaBottone() {
 }
 
 function confermaCarta() {
+    fermaCicloHighlight();
+
     if (!carta_selezionata) {
         return;
     }
@@ -522,6 +552,8 @@ function confermaCarta() {
 }
 
 function cartaAlBanco(carta) {
+    fermaCicloHighlight();
+
     giocatore_carte = giocatore_carte.filter(c => c !== carta);
 
     renderTable();
@@ -529,6 +561,8 @@ function cartaAlBanco(carta) {
 
     setTimeout(() => {
         banco_carte.push(carta);
+        registraCartaUscita(carta);
+
         player_turn = false;
 
         renderTable();
@@ -537,6 +571,8 @@ function cartaAlBanco(carta) {
 }
 
 function eseguiPresa(carta, scelta) {
+    fermaCicloHighlight();
+
     giocatore_mazzo.push(carta);
     giocatore_carte = giocatore_carte.filter(c => c !== carta);
 
@@ -554,6 +590,10 @@ function eseguiPresa(carta, scelta) {
         if (banco_carte.length === 0 && (bot_carte.length > 0 || giocatore_carte.length > 0 || !mazzo.isEmpty)) {
             scopa(true);
         }
+
+        registraCartaUscita(carta);
+        scelta.forEach(registraCartaUscita);
+        registraDenariPresi("giocatore", [carta, ...scelta]);
 
         ultima_presa_giocatore = true;
         player_turn = false;
@@ -596,6 +636,8 @@ function mostraOpzioni(carta, scelte) {
 */
 
 function botGioca() {
+    fermaCicloHighlight();
+
     const mossa = calcolaMossaBot();
 
     if (mossa.scelta === "none") {
@@ -611,6 +653,8 @@ function botCartaAlBanco(carta) {
 
     setTimeout(() => {
         banco_carte.push(carta);
+        registraCartaUscita(carta);
+
         player_turn = true;
 
         renderTable();
@@ -636,6 +680,10 @@ function botEffettuaPresa(carta, presa) {
         if (banco_carte.length === 0 && (bot_carte.length > 0 || giocatore_carte.length > 0 || !mazzo.isEmpty)) {
             scopa(false);
         }
+
+        registraCartaUscita(carta);
+        presa.forEach(registraCartaUscita);
+        registraDenariPresi("bot", [carta, ...presa]);
 
         ultima_presa_giocatore = false;
         player_turn = true;
@@ -675,6 +723,49 @@ function calcolaMossaBot() {
     return migliore_mossa;
 }
 
+function valutaStrategiaNapoleone(carta, presa = []) {
+    const carteCoinvolte = [carta, ...presa];
+
+    const denariCoinvolti = carteCoinvolte
+        .filter(c => c.seme === "denari")
+        .map(c => c.valore);
+
+    const denariBot = [...memoria_denari.bot];
+    const denariGiocatore = [...memoria_denari.giocatore];
+
+    let score = 0;
+
+    if (denariBot.includes(1) && denariBot.includes(2) && denariCoinvolti.includes(3)) {
+        score += 40;
+    }
+
+    if (denariBot.includes(1) && denariCoinvolti.includes(2)) {
+        score += 20;
+    }
+
+    if (denariBot.includes(2) && denariCoinvolti.includes(1)) {
+        score += 20;
+    }
+
+    if (denariBot.includes(1) && denariBot.includes(2) && denariBot.includes(3) && denariCoinvolti.includes(4)) {
+        score += 15;
+    }
+
+    if (denariGiocatore.includes(1) && denariGiocatore.includes(2) && denariCoinvolti.includes(3)) {
+        score += 25;
+    }
+
+    if (denariGiocatore.includes(1) && denariCoinvolti.includes(2)) {
+        score += 12;
+    }
+
+    if (denariGiocatore.includes(2) && denariCoinvolti.includes(1)) {
+        score += 12;
+    }
+
+    return score;
+}
+
 function valutaButto(carta) {
     let score = 0;
 
@@ -698,6 +789,9 @@ function valutaButto(carta) {
         default:
             break;
     }
+
+    const bancoDopoScarto = [...banco_carte, carta];
+    score -= valutaRischioPerGiocatore(bancoDopoScarto);
 
     score -= carta.valore;
 
@@ -752,15 +846,89 @@ function valutaPresa(carta, presa) {
     if (presa.some(c => c.valore === 1)) {
         score += 6;
     }
+    if (carta.seme === "denari" && [1, 2, 3, 4, 5].includes(carta.valore)) {
+        score -= 12;
+    }
+    if (mazzo.size <= 6) {
+        score += presa.length * 3;
+        score += presa.filter(c => c.seme === "denari").length * 5;
+    }
+
+    score += valutaStrategiaNapoleone(carta, presa);
+
+    score -= valutaRischioPerGiocatore(banco_rimasto);
 
     score -= carta.valore;
 
     return score;
 }
 
+function valutaRischioPerGiocatore(bancoRimasto) {
+    let rischio = 0;
+
+    giocatore_carte.forEach(cartaGiocatore => {
+        const prese = calcolaPrese(cartaGiocatore, bancoRimasto);
+
+        if (prese.length > 0) {
+            rischio += 12;
+        }
+
+        prese.forEach(presa => {
+            if (bancoRimasto.filter(c => !presa.includes(c)).length === 0) {
+                rischio += 40;
+            }
+
+            if (presa.some(c => c.seme === "denari" && c.valore === 7)) {
+                rischio += 30;
+            }
+
+            rischio += presa.filter(c => c.seme === "denari").length * 6;
+        });
+    });
+
+    return rischio;
+}
+
 /*
     Punteggi e storico
 */
+
+function registraCartaUscita(carta) {
+    carte_uscite.push({
+        seme: carta.seme,
+        valore: carta.valore
+    });
+}
+
+function registraDenariPresi(destinatario, carte) {
+    carte
+        .filter(c => c.seme === "denari")
+        .forEach(c => {
+            memoria_denari[destinatario].push(c.valore);
+        });
+}
+
+function calcolaNapoleone(mazzetto) {
+    const denari = mazzetto
+        .filter(c => c.seme === "denari")
+        .map(c => c.valore);
+
+    if (![1, 2, 3].every(v => denari.includes(v))) {
+        return 0;
+    }
+
+    let puntiNapoleone = 3;
+
+    for (let v = 4; v <= 10; v++) {
+        if (denari.includes(v)) {
+            puntiNapoleone++;
+        } else {
+            break;
+        }
+    }
+
+    return puntiNapoleone;
+}
 
 function calcolaPunteggioMano() {
     const puntiGiocatore = creaPunteggioVuoto();
@@ -797,6 +965,9 @@ function calcolaPunteggioMano() {
 
     puntiGiocatore.scope = punteggio_mano_giocatore.scope;
     puntiBot.scope = punteggio_mano_bot.scope;
+
+    puntiGiocatore.napoleone = calcolaNapoleone(giocatore_mazzo);
+    puntiBot.napoleone = calcolaNapoleone(bot_mazzo);
 
     const totaleGiocatore = Object.values(puntiGiocatore).reduce((a, b) => a + b, 0);
     const totaleBot = Object.values(puntiBot).reduce((a, b) => a + b, 0);
@@ -896,36 +1067,70 @@ function aggiungiManoAStorico(risultato, aggiornaTotale) {
 function renderStorico() {
     const storico = document.getElementById("storico-mani");
 
-    storico.innerHTML = `
-        <h3>Storico mani</h3>
-        ${storico_mani.map(m => `
-            <div class="mano-item">
-                <p><strong>Mano ${m.mano}</strong> — ${m.totaleManoGiocatore} a ${m.totaleManoBot}</p>
-                <p>Totale cumulativo: ${m.totaleMatchDopoMano.giocatore} a ${m.totaleMatchDopoMano.bot}</p>
+    if (!storico_mani.length) {
+        storico.innerHTML = "";
+        return;
+    }
+
+    storico.innerHTML = storico_mani.map(m => `
+        <div class="storico-item">
+            <h4>Mano ${m.mano}</h4>
+            <p><strong>Risultato mano:</strong> Tu ${m.totaleManoGiocatore} - ${m.totaleManoBot} Computer</p>
+            <p><strong>Totale cumulativo:</strong> Tu ${m.totaleMatchDopoMano.giocatore} - ${m.totaleMatchDopoMano.bot} Computer</p>
+            <p><strong>Iniziava:</strong> ${m.iniziavaGiocatore ? "Tu" : "Computer"}</p>
+
+            <div class="storico-dettagli">
+                <div class="storico-colonna">
+                    <h5>Tu</h5>
+                    <p><strong>Primiera:</strong> ${m.dettaglioGiocatore.primiera}</p>
+                    <p><strong>Sette bello:</strong> ${m.dettaglioGiocatore["sette bello"]}</p>
+                    <p><strong>Carte:</strong> ${m.dettaglioGiocatore.carte}</p>
+                    <p><strong>Denari:</strong> ${m.dettaglioGiocatore.ori}</p>
+                    <p><strong>Scope:</strong> ${m.dettaglioGiocatore.scope}</p>
+                    <p><strong>Napoleone:</strong> ${m.dettaglioGiocatore.napoleone}</p>
+                </div>
+
+                <div class="storico-colonna">
+                    <h5>Computer</h5>
+                    <p><strong>Primiera:</strong> ${m.dettaglioBot.primiera}</p>
+                    <p><strong>Sette bello:</strong> ${m.dettaglioBot["sette bello"]}</p>
+                    <p><strong>Carte:</strong> ${m.dettaglioBot.carte}</p>
+                    <p><strong>Denari:</strong> ${m.dettaglioBot.ori}</p>
+                    <p><strong>Scope:</strong> ${m.dettaglioBot.scope}</p>
+                    <p><strong>Napoleone:</strong> ${m.dettaglioBot.napoleone}</p>
+                </div>
             </div>
-        `).join("")}
-    `;
+        </div>
+    `).join("");
 }
 
 function creaHtmlDettaglio(risultato) {
     return `
-        <p><u>Punti totali:</u> ${risultato.totaleGiocatore}</p>
-        <p>Primiera: ${risultato.giocatore.primiera} pt (${risultato.primiera.bestGioc.denari}, ${risultato.primiera.bestGioc.coppe}, ${risultato.primiera.bestGioc.bastoni}, ${risultato.primiera.bestGioc.spade})</p>
-        <p>Sette bello: ${risultato.giocatore["sette bello"]} pt</p>
-        <p>Carte: ${risultato.giocatore.carte} pt (${risultato.carteGiocatore})</p>
-        <p>Denari: ${risultato.giocatore.ori} pt (${risultato.oriGiocatore})</p>
-        <p>Scope: ${risultato.giocatore.scope} pt</p>
+        <div class="riepilogo-dettaglio">
+            <p><strong>Punti totali:</strong> ${risultato.totaleGiocatore}</p>
+            <p><strong>Primiera:</strong> ${risultato.giocatore.primiera} pt 
+            (${risultato.primiera.bestGioc.denari}, ${risultato.primiera.bestGioc.coppe}, ${risultato.primiera.bestGioc.bastoni}, ${risultato.primiera.bestGioc.spade})</p>
+            <p><strong>Sette bello:</strong> ${risultato.giocatore["sette bello"]} pt</p>
+            <p><strong>Carte:</strong> ${risultato.giocatore.carte} pt (${risultato.carteGiocatore})</p>
+            <p><strong>Denari:</strong> ${risultato.giocatore.ori} pt (${risultato.oriGiocatore})</p>
+            <p><strong>Scope:</strong> ${risultato.giocatore.scope} pt</p>
+            <p><strong>Napoleone:</strong> ${risultato.giocatore.napoleone} pt</p>
+        </div>
     `;
 }
 
 function creaHtmlDettaglioBot(risultato) {
     return `
-        <p><u>Punti totali:</u> ${risultato.totaleBot}</p>
-        <p>Primiera: ${risultato.bot.primiera} pt (${risultato.primiera.bestBot.denari}, ${risultato.primiera.bestBot.coppe}, ${risultato.primiera.bestBot.bastoni}, ${risultato.primiera.bestBot.spade})</p>
-        <p>Sette bello: ${risultato.bot["sette bello"]} pt</p>
-        <p>Carte: ${risultato.bot.carte} pt (${risultato.carteBot})</p>
-        <p>Denari: ${risultato.bot.ori} pt (${risultato.oriBot})</p>
-        <p>Scope: ${risultato.bot.scope} pt</p>
+        <div class="riepilogo-dettaglio">
+            <p><strong>Punti totali:</strong> ${risultato.totaleBot}</p>
+            <p><strong>Primiera:</strong> ${risultato.bot.primiera} pt 
+            (${risultato.primiera.bestBot.denari}, ${risultato.primiera.bestBot.coppe}, ${risultato.primiera.bestBot.bastoni}, ${risultato.primiera.bestBot.spade})</p>
+            <p><strong>Sette bello:</strong> ${risultato.bot["sette bello"]} pt</p>
+            <p><strong>Carte:</strong> ${risultato.bot.carte} pt (${risultato.carteBot})</p>
+            <p><strong>Denari:</strong> ${risultato.bot.ori} pt (${risultato.oriBot})</p>
+            <p><strong>Scope:</strong> ${risultato.bot.scope} pt</p>
+            <p><strong>Napoleone:</strong> ${risultato.bot.napoleone} pt</p>
+        </div>
     `;
 }
 
@@ -943,17 +1148,32 @@ function mostraSceltaPrimaMano() {
 
     endGameDiv.className = "div_end_game fadein";
     vincitore.textContent = "Prima mano conclusa";
-    pointsg.innerHTML = "<p>Vuoi trasformare la partita in una corsa a 11 punti oppure fermarti a questa mano?</p>";
+
+    pointsg.innerHTML = `
+        Vuoi trasformare la partita in un match a 11 o 21 punti, oppure fermarti a questa mano?
+    `;
+
     pointsb.innerHTML = "";
     storico.innerHTML = "";
+
     actions.innerHTML = `
-        <button class="play_button" id="continua-a-11">Continua con partita a 11</button>
-        <button class="play_button" id="finisci-singola">Finisci partita</button>
+        <button id="continua-a-11" class="play_button">Continua a 11</button>
+        <button id="continua-a-21" class="play_button">Continua a 21</button>
+        <button id="finisci-singola" class="play_button">Fermati qui</button>
     `;
 
     endGameDiv.style.display = "block";
 
     document.getElementById("continua-a-11").onclick = () => {
+        punti_obiettivo_match = 11;
+        modalita_partita = "a11";
+        scelta_prima_mano = false;
+        aggiungiManoAStorico(risultato_mano_corrente, true);
+        mostraRiepilogoManoA11();
+    };
+
+    document.getElementById("continua-a-21").onclick = () => {
+        punti_obiettivo_match = 21;
         modalita_partita = "a11";
         scelta_prima_mano = false;
         aggiungiManoAStorico(risultato_mano_corrente, true);
@@ -966,36 +1186,6 @@ function mostraSceltaPrimaMano() {
         aggiungiManoAStorico(risultato_mano_corrente, false);
         mostraRiepilogoFinale(false);
     };
-}
-
-function mostraRiepilogoManoA11() {
-    const endGameDiv = document.getElementById("endgame");
-    const vincitore = document.getElementById("vincitore");
-    const pointsg = document.getElementById("pointsg");
-    const pointsb = document.getElementById("pointsb");
-    const actions = document.getElementById("endgame-actions");
-
-    endGameDiv.className = "div_end_game fadein";
-    vincitore.textContent = `Mano ${numero_mano} conclusa`;
-
-    pointsg.innerHTML = `
-        <h3>Tu</h3>
-        <p><b>Totale match:</b> ${totale_match.giocatore}</p>
-        ${creaHtmlDettaglio(risultato_mano_corrente)}
-    `;
-
-    pointsb.innerHTML = `
-        <h3>Computer</h3>
-        <p><b>Totale match:</b> ${totale_match.bot}</p>
-        ${creaHtmlDettaglioBot(risultato_mano_corrente)}
-    `;
-
-    renderStorico();
-
-    actions.innerHTML = `<button class="play_button" id="next-hand">Prossima mano</button>`;
-    document.getElementById("next-hand").onclick = preparaNuovaMano;
-
-    endGameDiv.style.display = "block";
 }
 
 function mostraRiepilogoFinale(usaTotaleMatch) {
@@ -1036,6 +1226,41 @@ function mostraRiepilogoFinale(usaTotaleMatch) {
     renderStorico();
 
     actions.innerHTML = `<button class="play_button" onclick="riavviaGioco()">Nuova partita</button>`;
+    endGameDiv.style.display = "block";
+}
+
+function mostraRiepilogoManoA11() {
+    const endGameDiv = document.getElementById("endgame");
+    const vincitore = document.getElementById("vincitore");
+    const pointsg = document.getElementById("pointsg");
+    const pointsb = document.getElementById("pointsb");
+    const actions = document.getElementById("endgame-actions");
+
+    endGameDiv.className = "div_end_game fadein";
+    vincitore.textContent = `Mano ${numero_mano} conclusa`;
+
+    pointsg.innerHTML = `
+        <h3>Tu</h3>
+        <p><b>Totale match</b>: ${totale_match.giocatore}</p>
+        <p><b>Obiettivo match</b>: ${punti_obiettivo_match}</p>
+        ${creaHtmlDettaglio(risultato_mano_corrente)}
+    `;
+
+    pointsb.innerHTML = `
+        <h3>Computer</h3>
+        <p><b>Totale match</b>: ${totale_match.bot}</p>
+        <p><b>Obiettivo match</b>: ${punti_obiettivo_match}</p>
+        ${creaHtmlDettaglioBot(risultato_mano_corrente)}
+    `;
+
+    renderStorico();
+
+    actions.innerHTML = `
+        <button id="next-hand" class="play_button">Prossima mano</button>
+    `;
+
+    document.getElementById("next-hand").onclick = preparaNuovaMano;
+
     endGameDiv.style.display = "block";
 }
 
@@ -1089,4 +1314,54 @@ function scopa(giocatore) {
     div.classList.remove("dissolvenza");
     void div.offsetWidth;
     div.classList.add("dissolvenza");
+}
+
+function rimuoviHighlightBanco() {
+    const carte = document.querySelectorAll("#banco_c .carta");
+    carte.forEach(carta => {
+        carta.classList.remove("highlighted", "highlight-cycle");
+    });
+}
+
+function evidenziaPresa(presa) {
+    rimuoviHighlightBanco();
+    const carte = document.querySelectorAll("#banco_c .carta");
+
+    presa.forEach(cartaPresa => {
+        const index = banco_carte.findIndex(c =>
+            c.seme === cartaPresa.seme && c.valore === cartaPresa.valore
+        );
+
+        if (index !== -1 && carte[index]) {
+            carte[index].classList.add("highlight-cycle");
+        }
+    });
+}
+
+function fermaCicloHighlight() {
+    if (intervalHighlightPrese) {
+        clearInterval(intervalHighlightPrese);
+        intervalHighlightPrese = null;
+    }
+
+    indiceHighlightCorrente = 0;
+    rimuoviHighlightBanco();
+}
+
+function avviaCicloHighlight(prese) {
+    fermaCicloHighlight();
+
+    if (!prese || prese.length === 0) return;
+
+    if (prese.length === 1) {
+        evidenziaPresa(prese[0]);
+        return;
+    }
+
+    evidenziaPresa(prese[0]);
+
+    intervalHighlightPrese = setInterval(() => {
+        indiceHighlightCorrente = (indiceHighlightCorrente + 1) % prese.length;
+        evidenziaPresa(prese[indiceHighlightCorrente]);
+    }, 1000);
 }

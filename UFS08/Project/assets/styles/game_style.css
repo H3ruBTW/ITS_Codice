@@ -362,6 +362,7 @@ main {
     justify-content: center;
     opacity: 0;
     pointer-events: none;
+    z-index: 1000;
 }
 
 .div_scopa {
@@ -403,7 +404,7 @@ main {
 }
 
 .div_end_game {
-    position: absolute;
+    position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -414,12 +415,15 @@ main {
     display: flex;
     flex-direction: column;
     gap: 1em;
-    width: 300px;
-    min-height: fit-content;
-    align-items: center;
+    width: min(92vw, 900px);
+    max-height: 85vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    align-items: stretch;
     text-align: center;
     opacity: 0;
     pointer-events: none;
+    z-index: 1000;
 }
 
 .win {
@@ -496,6 +500,28 @@ main {
     flex-direction: column;
     text-align: left;
     gap: 10px;
+    width: 100%;
+}
+
+.points > * {
+    min-width: 0;
+}
+
+#pointsg,
+#pointsb,
+#storico-mani,
+.riepilogo-dettaglio,
+.storico-item,
+.storico-colonna {
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
+
+#endgame-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
 }
 
 .points h3 {
@@ -523,4 +549,46 @@ main {
 .vola-alla-mano {
     position: absolute;
     animation: volaAllaMano 0.5s ease-in-out forwards;
+}
+
+.riepilogo-dettaglio p {
+    margin: 6px 0;
+}
+
+.storico-item {
+    margin: 16px 0;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+}
+
+.storico-dettagli {
+    display: flex;
+    gap: 20px;
+    margin-top: 10px;
+}
+
+.storico-colonna {
+    flex: 1;
+}
+
+.storico-colonna p {
+    margin: 4px 0;
+}
+
+.highlight-cycle {
+    outline: 3px solid #ffd54a;
+    box-shadow: 0 0 10px rgba(255, 213, 74, 0.9);
+    transform: translateY(-4px);
+    transition: all 0.25s ease;
+    animation: pulseHighlight 0.9s infinite alternate;
+}
+
+@keyframes pulseHighlight {
+    from {
+        box-shadow: 0 0 6px rgba(255, 213, 74, 0.5);
+    }
+    to {
+        box-shadow: 0 0 16px rgba(255, 213, 74, 1);
+    }
 }

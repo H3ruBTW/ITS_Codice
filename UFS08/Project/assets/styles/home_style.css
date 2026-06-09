@@ -72,6 +72,7 @@ a:active {
     padding: 1.5em;
     border-top: 1px solid #ffffff;
     border-bottom: 1px solid #ffffff;
+    overflow-x:scroll;
 }
 
 .under_nav_list {
