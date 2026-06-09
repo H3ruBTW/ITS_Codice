@@ -87,18 +87,21 @@
                 <h2></h2>
             </div>
 
-            <div id="end_game" class="div_end_game">
+            <div id="endgame" class="div_end_game">
                 <h2>Partita terminata</h2>
-                <p style="font-size: 1.3em;" id="vincitore"></p>
+                <p id="vincitore" style="font-size: 1.3em;"></p>
+
                 <div class="points">
-                    <div id="points_g">
-                        <p><b>I tuoi punti</b></p>
+                    <div id="pointsg">
+                    <p><b>I tuoi punti</b></p>
                     </div>
-                    <div id="points_b">
-                        <p><b>Punti computer</b></p>
+                    <div id="pointsb">
+                    <p><b>Punti computer</b></p>
                     </div>
                 </div>
-                <button onclick="riavviaGioco()" class="play_button">Nuova partita</button>
+
+                <div id="storico-mani"></div>
+                <div id="endgame-actions"></div>
             </div>
         </main>
             

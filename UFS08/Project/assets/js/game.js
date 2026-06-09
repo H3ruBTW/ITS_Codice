@@ -1,15 +1,20 @@
-const SEMI   = ["bastoni", "coppe", "denari", "spade"];
+/*
+    Costanti e classi
+*/
+
+const SEMI = ["bastoni", "coppe", "denari", "spade"];
 
 class Mazzo {
     carte = [];
 
     constructor() {
-        for (const seme of SEMI)
-            for (let valore = 1; valore<=10; valore++)
+        for (const seme of SEMI) {
+            for (let valore = 1; valore <= 10; valore++) {
                 this.carte.push({ seme, valore });
+            }
+        }
     }
 
-    // Fisher-Yates — O(n), il più efficiente possibile
     mescola() {
         for (let i = this.carte.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -18,428 +23,811 @@ class Mazzo {
     }
 
     pesca() {
-        if (this.isEmpty) 
+        if (this.isEmpty) {
             throw new Error("Mazzo vuoto!");
-
-        return this.carte.pop();         
+        }
+        return this.carte.pop();
     }
 
-    get size()    { return this.carte.length; }
-    get isEmpty() { return this.carte.length === 0; }
+    get size() {
+        return this.carte.length;
+    }
+
+    get isEmpty() {
+        return this.carte.length === 0;
+    }
 }
 
-const mazzo = new Mazzo();
-mazzo.mescola();
+function creaPunteggioVuoto() {
+    return {
+        primiera: 0,
+        "sette bello": 0,
+        carte: 0,
+        ori: 0,
+        scope: 0
+    };
+}
 
+/*
+    Stato partita
+*/
+
+let mazzo;
 let banco_carte = [];
 let giocatore_carte = [];
 let bot_carte = [];
-let giocatore_mazzo = []
-let bot_mazzo = []
+let giocatore_mazzo = [];
+let bot_mazzo = [];
+let carta_selezionata = null;
+let ultima_presa_giocatore = false;
 
-let player_starts = Math.random() >= .5
-let player_turn = player_starts
+let player_starts = Math.random() >= 0.5;
+let player_turn = player_starts;
 
-let ultima_presa_giocatore = false
+let punteggio_mano_giocatore = creaPunteggioVuoto();
+let punteggio_mano_bot = creaPunteggioVuoto();
 
-let punti_giocatore = {primiera: 0, "sette bello": 0, carte: 0, ori: 0, scope: 0}
-let punti_bot = {primiera: 0, "sette bello": 0, carte: 0, ori: 0, scope: 0}
+let modalita_partita = null;
+let scelta_prima_mano = true;
 
-let div_inizio = document.querySelector("#inizio h2")
+let totale_match = {
+    giocatore: 0,
+    bot: 0
+};
 
-if(player_starts){
-    div_inizio.textContent = "Inizi tu"
-} else {
-    div_inizio.textContent = "Inizia il bot"
+let storico_mani = [];
+let numero_mano = 1;
+let risultato_mano_corrente = null;
+
+let listenerConfirmAggiunto = false;
+let div_inizio = document.querySelector("#inizio h2");
+
+/*
+    Avvio e reset mano
+*/
+
+function aggiornaMessaggioInizio() {
+    const div_inizio = document.querySelector("#inizio h2");
+    div_inizio.textContent = player_starts ? "Inizi tu" : "Inizia il bot";
+    div_inizio.classList.remove("dissolvenza");
+    void div_inizio.offsetWidth;
+    div_inizio.classList.add("dissolvenza");
 }
 
-div_inizio.classList.add("dissolvenza")
+function inizializzaMano() {
+    mazzo = new Mazzo();
+    mazzo.mescola();
 
-startGame();
+    banco_carte = [];
+    giocatore_carte = [];
+    bot_carte = [];
+    giocatore_mazzo = [];
+    bot_mazzo = [];
+    carta_selezionata = null;
+    ultima_presa_giocatore = false;
+
+    punteggio_mano_giocatore = creaPunteggioVuoto();
+    punteggio_mano_bot = creaPunteggioVuoto();
+
+    renderTable();
+    aggiornaMessaggioInizio();
+}
+
+function avviaPrimaPartita() {
+    inizializzaMano();
+    startGame();
+}
+
+avviaPrimaPartita();
+
+function preparaNuovaMano() {
+    document.getElementById("endgame").style.display = "none";
+
+    numero_mano++;
+    player_starts = !player_starts;
+    player_turn = player_starts;
+
+    inizializzaMano();
+    startGame();
+}
+
+function riavviaGioco() {
+    modalita_partita = null;
+    scelta_prima_mano = true;
+
+    totale_match = {
+        giocatore: 0,
+        bot: 0
+    };
+
+    storico_mani = [];
+    numero_mano = 1;
+
+    player_starts = Math.random() >= 0.5;
+    player_turn = player_starts;
+
+    document.getElementById("endgame").style.display = "none";
+
+    inizializzaMano();
+    startGame();
+}
+
+/*
+    Flusso partita
+*/
 
 function startGame() {
-    let carta
-
-    distribuisci()
+    let carta;
+    distribuisci();
 
     setTimeout(() => {
-        for(let i=0; i<4; i++){
+        for (let i = 0; i < 4; i++) {
             setTimeout(() => {
-                renderTable()
-
-                banco_carte.push(carta = mazzo.pesca())
-
-                pescaggioBanco(carta, i)
-            }, i * 500)
-            
+                renderTable();
+                banco_carte.push(carta = mazzo.pesca());
+                pescaggioBanco(carta, i);
+            }, i * 500);
         }
+
         setTimeout(() => {
-            renderTable()
-            
-            document.getElementById("confirm").addEventListener("click", () => {
-                if (!carta_selezionata) return  // safety check
+            renderTable();
 
-                confermaCarta()
-            })
+            if (!listenerConfirmAggiunto) {
+                document.getElementById("confirm").addEventListener("click", () => {
+                    if (!carta_selezionata) {
+                        return;
+                    }
+                    confermaCarta();
+                });
+                listenerConfirmAggiunto = true;
+            }
 
-            gestisciTurno()
-        }, 2000)
-        
-    }, 3500)
-    
-    
+            gestisciTurno();
+        }, 2000);
+    }, 3500);
 }
 
-function distribuisci(){
-    let carta
+function distribuisci() {
+    let carta;
 
-    for(let i=0; i<3; i++){
-        
-        if(player_starts){
+    for (let i = 0; i < 3; i++) {
+        if (player_starts) {
             setTimeout(() => {
-                renderTable()
-
-                giocatore_carte.push(carta = mazzo.pesca())
-
-                animazionePescaggio(carta, true)
-            }, 500 + 1000 * i)
+                renderTable();
+                giocatore_carte.push(carta = mazzo.pesca());
+                animazionePescaggio(carta, true);
+            }, 500 + 1000 * i);
 
             setTimeout(() => {
-                renderTable()
-
-                bot_carte.push(mazzo.pesca())
-
-                animazionePescaggio(null, false)
-
-                renderTable()
-            }, 1000 + 1000 * i)
-            
-        } else {            
+                renderTable();
+                bot_carte.push(mazzo.pesca());
+                animazionePescaggio(null, false);
+                renderTable();
+            }, 1000 + 1000 * i);
+        } else {
             setTimeout(() => {
-                renderTable()
-
-                bot_carte.push(mazzo.pesca())
-
-                animazionePescaggio(null, false)
-            }, 500 + 1000 * i)
+                renderTable();
+                bot_carte.push(mazzo.pesca());
+                animazionePescaggio(null, false);
+            }, 500 + 1000 * i);
 
             setTimeout(() => {
-                renderTable()
-
-                giocatore_carte.push(carta = mazzo.pesca())
-
-                animazionePescaggio(carta, true) 
-                
-                renderTable()
-            }, 1000 + 1000 * i)
+                renderTable();
+                giocatore_carte.push(carta = mazzo.pesca());
+                animazionePescaggio(carta, true);
+                renderTable();
+            }, 1000 + 1000 * i);
         }
     }
 }
 
-function animazionePescaggio(carta, giocatore){
-    const main = document.querySelector("main")
-    const mainRect = main.getBoundingClientRect()
-    const mazzo = document.getElementById("banco_m").getBoundingClientRect()
+function gestisciTurno() {
+    let pescaggio = false;
+    carta_selezionata = null;
+    aggiornaBottone();
 
-    const img = document.createElement("img")
-    img.src = giocatore 
-        ? "assets/images/carte/" + carta.valore + "_" + carta.seme + ".jpg"
-        : "assets/images/carte/retro.jpg"
-    img.classList.add("carta", "toanimate")
+    if (giocatore_carte.length === 0 && bot_carte.length === 0) {
+        if (mazzo.isEmpty) {
+            if (ultima_presa_giocatore) {
+                banco_carte.forEach(c => giocatore_mazzo.push(c));
+            } else {
+                banco_carte.forEach(c => bot_mazzo.push(c));
+            }
 
+            banco_carte = [];
+            renderTable();
 
+            setTimeout(endGame, 1500);
+            return;
+        } else {
+            pescaggio = true;
+            distribuisci();
+            renderTable();
+        }
+    }
 
-    // parte dal mazzo
-    img.style.left = (mazzo.left + mazzo.width  / 2 - mainRect.left) + "px"
-    img.style.top  = (mazzo.top  + mazzo.height / 2 - mainRect.top)  + "px"
-
-    // destinazione: div_giocatore o div_bot
-    const dest = document.getElementsByClassName(giocatore ? "div_giocatore" : "div_bot")[0].getBoundingClientRect()
-    const targetX = (dest.left + dest.width  / 2 - mainRect.left) - parseFloat(img.style.left)
-    const targetY = giocatore ? (dest.top  + dest.height / 2 - mainRect.top - 80)  - parseFloat(img.style.top) 
-                        : (dest.top  + dest.height / 2 - mainRect.top - 40)  - parseFloat(img.style.top) 
-
-    img.style.setProperty("--tx", targetX + "px")
-    img.style.setProperty("--ty", targetY + "px")
-
-    main.appendChild(img)
-    img.classList.add("vola-alla-mano")
-
-    img.addEventListener("animationend", () => img.remove(), { once: true })
+    if (pescaggio) {
+        setTimeout(() => {
+            if (player_turn) {
+                console.log("Turno: GIOCATORE");
+                giocatoreGioca();
+            } else {
+                console.log("Turno: BOT");
+                setTimeout(botGioca, 800);
+            }
+        }, 3000);
+    } else {
+        if (player_turn) {
+            console.log("Turno: GIOCATORE");
+            giocatoreGioca();
+        } else {
+            console.log("Turno: BOT");
+            setTimeout(botGioca, 800);
+        }
+    }
 }
 
-function pescaggioBanco(carta, n){
-    const main = document.querySelector("main")
-    const mainRect = main.getBoundingClientRect()
-    const mazzo = document.getElementById("banco_m").getBoundingClientRect()
+function endGame() {
+    risultato_mano_corrente = calcolaPunteggioMano();
 
-    const img = document.createElement("img")
-    img.src = "assets/images/carte/" + carta.valore + "_" + carta.seme + ".jpg"
-        
-    img.classList.add("carta", "toanimate")
+    if (scelta_prima_mano) {
+        mostraSceltaPrimaMano();
+        return;
+    }
 
-    // parte dal mazzo
-    img.style.left = (mazzo.left + mazzo.width  / 2 - mainRect.left) + "px"
-    img.style.top  = (mazzo.top  + mazzo.height / 2 - mainRect.top)  + "px"
+    if (modalita_partita === "a11") {
+        aggiungiManoAStorico(risultato_mano_corrente, true);
 
-    // destinazione: div_giocatore o div_bot
-    const dest = document.getElementsByClassName("div_banco")[0].getBoundingClientRect()
-    const targetX = (dest.left + dest.width  / 2 - mainRect.left - 160 + (55 * n)) - parseFloat(img.style.left)
-    const targetY = (dest.top  + dest.height / 2 - mainRect.top - 40)  - parseFloat(img.style.top) 
+        const partitaFinita =
+            (totale_match.giocatore >= 11 || totale_match.bot >= 11) &&
+            totale_match.giocatore !== totale_match.bot;
 
-    img.style.setProperty("--tx", targetX + "px")
-    img.style.setProperty("--ty", targetY + "px")
+        if (partitaFinita) {
+            mostraRiepilogoFinale(true);
+        } else {
+            mostraRiepilogoManoA11();
+        }
+        return;
+    }
 
-    main.appendChild(img)
-    img.classList.add("vola-alla-mano")
-
-    img.addEventListener("animationend", () => img.remove(), { once: true })
+    if (modalita_partita === "singola") {
+        aggiungiManoAStorico(risultato_mano_corrente, false);
+        mostraRiepilogoFinale(false);
+    }
 }
 
-function renderTable(){
-    //div dove sono presenti le carte
-    let div_bot = document.getElementById("bot")
-    let div_gioc = document.getElementById("giocatore")
-    let div_banco = document.getElementById("banco_c")
+/*
+    Rendering tavolo
+*/
 
-    div_bot.innerHTML = ""
-    div_banco.innerHTML = ""
-    div_gioc.innerHTML = ""
+function renderTable() {
+    let div_bot = document.getElementById("bot");
+    let div_gioc = document.getElementById("giocatore");
+    let div_banco = document.getElementById("banco_c");
 
-    let img
+    div_bot.innerHTML = "";
+    div_banco.innerHTML = "";
+    div_gioc.innerHTML = "";
+
+    let img;
 
     bot_carte.forEach(element => {
-        img = document.createElement("img")
-
-        img.src = "assets/images/carte/retro.jpg"
-        img.alt = "Retro carta"
-
-        img.classList.add("carta")
-
-        div_bot.appendChild(img)
+        img = document.createElement("img");
+        img.src = "assets/images/carte/retro.jpg";
+        img.alt = "Retro carta";
+        img.classList.add("carta");
+        div_bot.appendChild(img);
     });
 
-    giocatore_carte.forEach(element =>{
-        img = document.createElement("img")
-
-        img.src = "assets/images/carte/" + element.valore + "_" + element.seme + ".jpg"
-        img.alt = "Carta di valore " + element.valore + " e di seme " + element.seme
-
-        img.classList.add("carta")
-        
-        div_gioc.appendChild(img)
-    })
+    giocatore_carte.forEach(element => {
+        img = document.createElement("img");
+        img.src = "assets/images/carte/" + element.valore + "_" + element.seme + ".jpg";
+        img.alt = "Carta di valore " + element.valore + " e di seme " + element.seme;
+        img.classList.add("carta");
+        div_gioc.appendChild(img);
+    });
 
     banco_carte.forEach(element => {
-        img = document.createElement("img")
+        img = document.createElement("img");
+        img.src = "assets/images/carte/" + element.valore + "_" + element.seme + ".jpg";
+        img.alt = "Carta di valore " + element.valore + " e di seme " + element.seme;
+        img.classList.add("carta");
+        div_banco.appendChild(img);
+    });
 
-        img.src = "assets/images/carte/" + element.valore + "_" + element.seme + ".jpg"
-        img.alt = "Carta di valore " + element.valore + " e di seme " + element.seme
+    let counter_mazzo = document.getElementById("counterBanco");
+    counter_mazzo.textContent = mazzo.size;
 
-        img.classList.add("carta")
-
-        div_banco.appendChild(img)
-    })
-
-    //Banco
-    let counter_mazzo = document.getElementById("counterBanco")
-    counter_mazzo.textContent = mazzo.size
-
-    //Giocatore
-    let div_mazzo = document.getElementsByClassName("gioc_mazzetto")
-    div_mazzo[0].innerHTML = ""
+    let div_mazzo = document.getElementsByClassName("gioc_mazzetto");
+    div_mazzo[0].innerHTML = "";
     img = document.createElement("img");
 
-    if(giocatore_mazzo.length > 0){
-        img.src = "assets/images/carte/retro.jpg"
-        img.alt = "Retro carta"
-        img.classList.add("carta")
-        div_mazzo[0].appendChild(img)
+    if (giocatore_mazzo.length > 0) {
+        img.src = "assets/images/carte/retro.jpg";
+        img.alt = "Retro carta";
+        img.classList.add("carta");
+        div_mazzo[0].appendChild(img);
     } else {
-        div_mazzo[0].innerHTML += "<div class=\"mazzetto_vuoto\"></div>"
+        div_mazzo[0].innerHTML += '<div class="mazzetto_vuoto"></div>';
     }
 
-    div_mazzo[0].innerHTML += "<span id='counterG'>" + giocatore_mazzo.length + "</span>"
+    div_mazzo[0].innerHTML += "<span id='counterG'>" + giocatore_mazzo.length + "</span>";
 
-    //Bot
-    div_mazzo = document.getElementsByClassName("bot_mazzetto")
-    div_mazzo[0].innerHTML = ""
+    div_mazzo = document.getElementsByClassName("bot_mazzetto");
+    div_mazzo[0].innerHTML = "";
     img = document.createElement("img");
-    
-    if(bot_mazzo.length > 0){
-        img.src = "assets/images/carte/retro.jpg"
-        img.alt = "Retro carta"
-        img.classList.add("carta")
-        div_mazzo[0].appendChild(img)
+
+    if (bot_mazzo.length > 0) {
+        img.src = "assets/images/carte/retro.jpg";
+        img.alt = "Retro carta";
+        img.classList.add("carta");
+        div_mazzo[0].appendChild(img);
     } else {
-        div_mazzo[0].innerHTML += "<div class=\"mazzetto_vuoto\"></div>"
+        div_mazzo[0].innerHTML += '<div class="mazzetto_vuoto"></div>';
     }
 
-    div_mazzo[0].innerHTML += "<span id='counterBot'>" + bot_mazzo.length + "</span>"
+    div_mazzo[0].innerHTML += "<span id='counterBot'>" + bot_mazzo.length + "</span>";
 }
 
-function giocatoreGioca(){
-    const imgs = document.querySelectorAll("#giocatore img")
+/*
+    Animazioni
+*/
+
+function animazionePescaggio(carta, giocatore) {
+    const main = document.querySelector("main");
+    const mainRect = main.getBoundingClientRect();
+    const mazzo = document.getElementById("banco_m").getBoundingClientRect();
+
+    const img = document.createElement("img");
+    img.src = giocatore
+        ? "assets/images/carte/" + carta.valore + "_" + carta.seme + ".jpg"
+        : "assets/images/carte/retro.jpg";
+    img.classList.add("carta", "toanimate");
+
+    img.style.left = (mazzo.left + mazzo.width / 2 - mainRect.left) + "px";
+    img.style.top = (mazzo.top + mazzo.height / 2 - mainRect.top) + "px";
+
+    const dest = document.getElementsByClassName(giocatore ? "div_giocatore" : "div_bot")[0].getBoundingClientRect();
+    const targetX = (dest.left + dest.width / 2 - mainRect.left) - parseFloat(img.style.left);
+    const targetY = giocatore
+        ? (dest.top + dest.height / 2 - mainRect.top - 80) - parseFloat(img.style.top)
+        : (dest.top + dest.height / 2 - mainRect.top - 40) - parseFloat(img.style.top);
+
+    img.style.setProperty("--tx", targetX + "px");
+    img.style.setProperty("--ty", targetY + "px");
+
+    main.appendChild(img);
+    img.classList.add("vola-alla-mano");
+
+    img.addEventListener("animationend", () => img.remove(), { once: true });
+}
+
+function pescaggioBanco(carta, n) {
+    const main = document.querySelector("main");
+    const mainRect = main.getBoundingClientRect();
+    const mazzo = document.getElementById("banco_m").getBoundingClientRect();
+
+    const img = document.createElement("img");
+    img.src = "assets/images/carte/" + carta.valore + "_" + carta.seme + ".jpg";
+    img.classList.add("carta", "toanimate");
+
+    img.style.left = (mazzo.left + mazzo.width / 2 - mainRect.left) + "px";
+    img.style.top = (mazzo.top + mazzo.height / 2 - mainRect.top) + "px";
+
+    const dest = document.getElementsByClassName("div_banco")[0].getBoundingClientRect();
+    const targetX = (dest.left + dest.width / 2 - mainRect.left - 160 + (55 * n)) - parseFloat(img.style.left);
+    const targetY = (dest.top + dest.height / 2 - mainRect.top - 40) - parseFloat(img.style.top);
+
+    img.style.setProperty("--tx", targetX + "px");
+    img.style.setProperty("--ty", targetY + "px");
+
+    main.appendChild(img);
+    img.classList.add("vola-alla-mano");
+
+    img.addEventListener("animationend", () => img.remove(), { once: true });
+}
+
+function animazioneCarta(carta, giocatore) {
+    const main = document.querySelector("main");
+    const banco = document.getElementsByClassName("div_banco")[0].getBoundingClientRect();
+    const mainRect = main.getBoundingClientRect();
+
+    const img = document.createElement("img");
+    img.src = "assets/images/carte/" + carta.valore + "_" + carta.seme + ".jpg";
+    img.classList.add("carta", "toanimate");
+
+    if (giocatore) {
+        const divGiocatore = document.getElementsByClassName("div_giocatore")[0].getBoundingClientRect();
+        img.style.left = (divGiocatore.left + divGiocatore.width / 2 - mainRect.left) + "px";
+        img.style.top = (divGiocatore.top + divGiocatore.height / 2 - mainRect.top - 70) + "px";
+    } else {
+        img.style.left = (mainRect.width / 2) + "px";
+        img.style.top = "0px";
+    }
+
+    const targetX = (banco.left + banco.width / 2) - mainRect.left - img.offsetWidth / 2;
+    const targetY = (banco.top + banco.height / 2) - mainRect.top - img.offsetHeight / 2 - 40;
+
+    img.style.setProperty("--tx", `${targetX - parseFloat(img.style.left)}px`);
+    img.style.setProperty("--ty", `${targetY - parseFloat(img.style.top)}px`);
+
+    main.appendChild(img);
+    img.classList.add("vola-al-banco");
+
+    img.addEventListener("animationend", () => img.remove(), { once: true });
+}
+
+function higlightCarte(presa) {
+    const carte = document.querySelectorAll("#banco_c .carta");
+
+    presa.forEach(cartaPresa => {
+        const index = banco_carte.findIndex(c =>
+            c.seme === cartaPresa.seme && c.valore === cartaPresa.valore
+        );
+
+        carte[index].classList.add("highlighted");
+    });
+}
+
+/*
+    Turno giocatore
+*/
+
+function giocatoreGioca() {
+    const imgs = document.querySelectorAll("#giocatore img");
 
     giocatore_carte.forEach((element, i) => {
-        imgs[i].classList.add("toplay")
+        imgs[i].classList.add("toplay");
         imgs[i].addEventListener("click", () => {
             if (carta_selezionata?.element === element) {
-                imgs[i].classList.remove("selected")
-                carta_selezionata = null
+                imgs[i].classList.remove("selected");
+                carta_selezionata = null;
             } else {
-                if (carta_selezionata)
-                    carta_selezionata.img.classList.remove("selected")
+                if (carta_selezionata) {
+                    carta_selezionata.img.classList.remove("selected");
+                }
 
-                imgs[i].classList.add("selected")
-                carta_selezionata = { element, img: imgs[i] }
-
+                imgs[i].classList.add("selected");
+                carta_selezionata = { element, img: imgs[i] };
             }
-            aggiornaBottone()
-        })
-    })
+            aggiornaBottone();
+        });
+    });
 }
 
 function aggiornaBottone() {
-    const btn = document.getElementById("confirm")
-    btn.disabled = !(player_turn && carta_selezionata !== null)
+    const btn = document.getElementById("confirm");
+    btn.disabled = !(player_turn && carta_selezionata !== null);
 }
 
-function gestisciTurno(){
-    let pescaggio = false
-    carta_selezionata = null
-    aggiornaBottone()
+function confermaCarta() {
+    if (!carta_selezionata) {
+        return;
+    }
 
-    if(giocatore_carte.length === 0 && bot_carte.length === 0){
-        if(mazzo.isEmpty){
-            if(ultima_presa_giocatore){
-                banco_carte.forEach(c => giocatore_mazzo.push(c))
-            } else {
-                banco_carte.forEach(c => bot_mazzo.push(c))
+    const carta = carta_selezionata.element;
+    carta_selezionata = null;
+
+    const prese = calcolaPrese(carta, banco_carte);
+
+    console.log(carta);
+
+    if (prese.length === 0) {
+        cartaAlBanco(carta);
+    } else if (prese.length === 1) {
+        eseguiPresa(carta, prese[0]);
+    } else {
+        mostraOpzioni(carta, prese);
+    }
+}
+
+function cartaAlBanco(carta) {
+    giocatore_carte = giocatore_carte.filter(c => c !== carta);
+
+    renderTable();
+    animazioneCarta(carta, true);
+
+    setTimeout(() => {
+        banco_carte.push(carta);
+        player_turn = false;
+
+        renderTable();
+        gestisciTurno();
+    }, 1000);
+}
+
+function eseguiPresa(carta, scelta) {
+    giocatore_mazzo.push(carta);
+    giocatore_carte = giocatore_carte.filter(c => c !== carta);
+
+    renderTable();
+    higlightCarte(scelta);
+    animazioneCarta(carta, true);
+
+    setTimeout(() => {
+        scelta.forEach(c => {
+            giocatore_mazzo.push(c);
+        });
+
+        banco_carte = banco_carte.filter(c => !scelta.includes(c));
+
+        if (banco_carte.length === 0 && (bot_carte.length > 0 || giocatore_carte.length > 0 || !mazzo.isEmpty)) {
+            scopa(true);
+        }
+
+        ultima_presa_giocatore = true;
+        player_turn = false;
+
+        renderTable();
+        gestisciTurno();
+    }, 1000);
+}
+
+function mostraOpzioni(carta, scelte) {
+    let div_options = document.getElementsByClassName("div_options");
+    let opzioni_disp = document.getElementById("opzioni");
+
+    opzioni_disp.innerHTML = "";
+
+    scelte.forEach(scelta => {
+        const elem_scelta = document.createElement("button");
+
+        for (let i = 0; i < scelta.length; i++) {
+            if (i > 0) {
+                elem_scelta.textContent += " + ";
             }
+            elem_scelta.textContent += scelta[i].valore + " " + scelta[i].seme + " ";
+        }
 
-            banco_carte = []
-            renderTable()
+        elem_scelta.classList.add("play_button");
+        opzioni_disp.appendChild(elem_scelta);
 
-            setTimeout(endGame, 1500)
-            return
+        elem_scelta.addEventListener("click", () => {
+            div_options[0].style.visibility = "hidden";
+            eseguiPresa(carta, scelta);
+        });
+    });
+
+    div_options[0].style.visibility = "visible";
+}
+
+/*
+    Turno bot
+*/
+
+function botGioca() {
+    const mossa = calcolaMossaBot();
+
+    if (mossa.scelta === "none") {
+        botCartaAlBanco(mossa.carta);
+    } else {
+        botEffettuaPresa(mossa.carta, mossa.scelta);
+    }
+}
+
+function botCartaAlBanco(carta) {
+    bot_carte = bot_carte.filter(c => c !== carta);
+    animazioneCarta(carta, false);
+
+    setTimeout(() => {
+        banco_carte.push(carta);
+        player_turn = true;
+
+        renderTable();
+        gestisciTurno();
+    }, 1000);
+}
+
+function botEffettuaPresa(carta, presa) {
+    bot_mazzo.push(carta);
+    bot_carte = bot_carte.filter(c => c !== carta);
+
+    renderTable();
+    higlightCarte(presa);
+    animazioneCarta(carta, false);
+
+    setTimeout(() => {
+        presa.forEach(c => {
+            bot_mazzo.push(c);
+        });
+
+        banco_carte = banco_carte.filter(c => !presa.includes(c));
+
+        if (banco_carte.length === 0 && (bot_carte.length > 0 || giocatore_carte.length > 0 || !mazzo.isEmpty)) {
+            scopa(false);
+        }
+
+        ultima_presa_giocatore = false;
+        player_turn = true;
+
+        renderTable();
+        gestisciTurno();
+    }, 1000);
+}
+
+function calcolaMossaBot() {
+    let migliore_mossa = null;
+    let migliore_score = -Infinity;
+
+    for (let i = 0; i < bot_carte.length; i++) {
+        const carta = bot_carte[i];
+        const opzioni = calcolaPrese(carta, banco_carte);
+
+        if (opzioni.length === 0) {
+            const score = valutaButto(carta);
+
+            if (score > migliore_score) {
+                migliore_mossa = { carta: carta, scelta: "none" };
+                migliore_score = score;
+            }
         } else {
-            pescaggio = true
-            distribuisci()
-            renderTable()
+            opzioni.forEach(presa => {
+                const score = valutaPresa(carta, presa);
+
+                if (score > migliore_score) {
+                    migliore_mossa = { carta: carta, scelta: presa };
+                    migliore_score = score;
+                }
+            });
         }
     }
 
-    if(pescaggio)
-        setTimeout(() => {
-            if (player_turn) {
-                console.log("Turno: GIOCATORE")
-                giocatoreGioca()
-            } else {
-                console.log("Turno: BOT")
-                setTimeout(botGioca, 800)
-            }
-        }, 3000)
-    else {
-        if (player_turn) {
-            console.log("Turno: GIOCATORE")
-            giocatoreGioca()
-        } else {
-            console.log("Turno: BOT")
-            setTimeout(botGioca, 800)
-        }
-    }
-    
+    return migliore_mossa;
 }
 
-function endGame(){
-    if(giocatore_mazzo.length > 20)
-        punti_giocatore.carte++
-    else if(bot_mazzo.length > 20)
-        punti_bot.carte++
+function valutaButto(carta) {
+    let score = 0;
 
-    let primiera = calcolaPrimiera()
+    if (carta.seme === "denari") {
+        score -= 15;
+    }
 
-    switch (primiera.ris) {
-        case "g":
-            punti_giocatore.primiera++
+    switch (carta.valore) {
+        case 7:
+            score -= 15;
             break;
 
-        case "b":
-            punti_bot.primiera++
-            break
+        case 6:
+            score -= 10;
+            break;
+
+        case 1:
+            score -= 9;
+            break;
 
         default:
-            break
+            break;
     }
 
-    if(giocatore_mazzo.some(c => c.seme === "denari" && c.valore === 7))
-        punti_giocatore["sette bello"]++
+    score -= carta.valore;
 
-    if(bot_mazzo.some(c => c.seme === "denari" && c.valore === 7))
-        punti_bot["sette bello"]++
-
-    let ori_g
-    let ori_b
-
-    if((ori_g = giocatore_mazzo.filter(c => c.seme === "denari").length) > 
-                    (ori_b = bot_mazzo.filter(c => c.seme === "denari").length))
-        punti_giocatore.ori++
-
-    if(giocatore_mazzo.filter(c => c.seme === "denari").length < 
-                bot_mazzo.filter(c => c.seme === "denari").length)
-        punti_bot.ori++
-
-    let vincitore = document.getElementById("vincitore")
-    let end_game_div = document.getElementById("end_game")
-
-    let puntiG = 0
-    let puntiB = 0
-
-    Object.values(punti_giocatore).forEach(p => puntiG += p)
-    Object.values(punti_bot).forEach(p => puntiB += p)
-
-    if(puntiG > puntiB){
-        vincitore.textContent = "Hai vinto"
-        end_game_div.classList.add("win")
-    } else if(puntiB > puntiG){
-        vincitore.textContent = "Hai perso"
-        end_game_div.classList.add("lose")
-    } else {
-        vincitore.textContent = "Pareggio"
-        end_game_div.classList.add("draw")
-    }
-
-    let p = document.createElement("p")
-    p.innerHTML += "<u>Punti totali: " + puntiG + " p.ti</u><br>"
-    p.innerHTML += "Primiera: " + punti_giocatore.primiera + " p.ti {" + primiera.bestGioc.denari + "♦, " + primiera.bestGioc.coppe + "♣, " + primiera.bestGioc.bastoni + "♥, " + primiera.bestGioc.spade + "♠}<br>"
-    p.innerHTML += "Sette bello: " + punti_giocatore["sette bello"] + " p.ti<br>"
-    p.innerHTML += "Carte: " + punti_giocatore.carte + " p.ti [" + giocatore_mazzo.length + "]<br>"
-    p.innerHTML += "Denari: " + punti_giocatore.ori + " p.ti [" + ori_g + "]<br>"
-    p.innerHTML += "Scope: " + punti_giocatore.scope + " p.ti"
-
-    let div_punti_g = document.getElementById("points_g")
-    div_punti_g.appendChild(p)
-
-    p = document.createElement("p")
-    p.innerHTML += "<u>Punti totali: " + puntiB + " p.ti</u><br>"
-    p.innerHTML += "Primiera: " + punti_bot.primiera + " p.ti {" + primiera.bestBot.denari + "♦, " + primiera.bestBot.coppe + "♣, " + primiera.bestBot.bastoni + "♥, " + primiera.bestBot.spade + "♠}<br>"
-
-    p.innerHTML += "Sette bello: " + punti_bot["sette bello"] + " p.ti<br>"
-    p.innerHTML += "Carte: " + punti_bot.carte + " p.ti [" + giocatore_mazzo.length + "]<br>"
-    p.innerHTML += "Denari: " + punti_bot.ori + " p.ti [" + ori_b + "]<br>"
-    p.innerHTML += "Scope: " + punti_bot.scope + " p.ti"
-
-    let div_punti_b = document.getElementById("points_b")
-    div_punti_b.appendChild(p)
-
-    let div_punti = document.getElementById("end_game")
-    div_punti.classList.add("fadein")
+    return score;
 }
 
-function calcolaPrimiera(){
-    let bestGioc = {bastoni: 0, coppe: 0, denari: 0, spade: 0}
-    let bestBot = {bastoni: 0, coppe: 0, denari: 0, spade: 0}
+function valutaPresa(carta, presa) {
+    let score = 0;
+
+    const banco_rimasto = banco_carte.filter(c =>
+        !presa.some(p => p.seme === c.seme && p.valore === c.valore)
+    );
+
+    if (banco_rimasto.length === 0) {
+        score += 100;
+    }
+
+    score += presa.length * 5;
+
+    if (carta.seme === "denari" && carta.valore === 7) {
+        score += 30;
+    }
+    if (presa.some(c => c.seme === "denari" && c.valore === 7)) {
+        score += 30;
+    }
+
+    const lascia_7_denari = banco_rimasto.some(c => c.seme === "denari" && c.valore === 7);
+    if (lascia_7_denari) {
+        score -= 25;
+    }
+
+    if (carta.seme === "denari") {
+        score += 8;
+    }
+    score += presa.filter(c => c.seme === "denari").length * 8;
+
+    if (carta.valore === 7) {
+        score += 10;
+    }
+    if (presa.some(c => c.valore === 7)) {
+        score += 10;
+    }
+    if (carta.valore === 6) {
+        score += 8;
+    }
+    if (presa.some(c => c.valore === 6)) {
+        score += 8;
+    }
+    if (carta.valore === 1) {
+        score += 6;
+    }
+    if (presa.some(c => c.valore === 1)) {
+        score += 6;
+    }
+
+    score -= carta.valore;
+
+    return score;
+}
+
+/*
+    Punteggi e storico
+*/
+
+function calcolaPunteggioMano() {
+    const puntiGiocatore = creaPunteggioVuoto();
+    const puntiBot = creaPunteggioVuoto();
+
+    if (giocatore_mazzo.length > 20) {
+        puntiGiocatore.carte++;
+    } else if (bot_mazzo.length > 20) {
+        puntiBot.carte++;
+    }
+
+    const primiera = calcolaPrimiera();
+    if (primiera.ris === "g") {
+        puntiGiocatore.primiera++;
+    } else if (primiera.ris === "b") {
+        puntiBot.primiera++;
+    }
+
+    if (giocatore_mazzo.some(c => c.seme === "denari" && c.valore === 7)) {
+        puntiGiocatore["sette bello"]++;
+    }
+    if (bot_mazzo.some(c => c.seme === "denari" && c.valore === 7)) {
+        puntiBot["sette bello"]++;
+    }
+
+    const oriGiocatore = giocatore_mazzo.filter(c => c.seme === "denari").length;
+    const oriBot = bot_mazzo.filter(c => c.seme === "denari").length;
+
+    if (oriGiocatore > oriBot) {
+        puntiGiocatore.ori++;
+    } else if (oriBot > oriGiocatore) {
+        puntiBot.ori++;
+    }
+
+    puntiGiocatore.scope = punteggio_mano_giocatore.scope;
+    puntiBot.scope = punteggio_mano_bot.scope;
+
+    const totaleGiocatore = Object.values(puntiGiocatore).reduce((a, b) => a + b, 0);
+    const totaleBot = Object.values(puntiBot).reduce((a, b) => a + b, 0);
+
+    return {
+        giocatore: puntiGiocatore,
+        bot: puntiBot,
+        totaleGiocatore,
+        totaleBot,
+        primiera,
+        carteGiocatore: giocatore_mazzo.length,
+        carteBot: bot_mazzo.length,
+        oriGiocatore,
+        oriBot
+    };
+}
+
+function calcolaPrimiera() {
+    let bestGioc = {
+        bastoni: 0,
+        coppe: 0,
+        denari: 0,
+        spade: 0
+    };
+
+    let bestBot = {
+        bastoni: 0,
+        coppe: 0,
+        denari: 0,
+        spade: 0
+    };
 
     const PUNTI_PRIMIERA = {
         7: 21,
@@ -452,376 +840,253 @@ function calcolaPrimiera(){
         8: 10,
         9: 10,
         10: 10
-    }
+    };
 
     giocatore_mazzo.forEach(c => {
-        const seme = c.seme
+        const seme = c.seme;
 
-        if(bestGioc[seme] < PUNTI_PRIMIERA[c.valore])
-            bestGioc[seme] = PUNTI_PRIMIERA[c.valore]
-    })
+        if (bestGioc[seme] < PUNTI_PRIMIERA[c.valore]) {
+            bestGioc[seme] = PUNTI_PRIMIERA[c.valore];
+        }
+    });
 
     bot_mazzo.forEach(c => {
-        const seme = c.seme
+        const seme = c.seme;
 
-        if(bestBot[seme] < PUNTI_PRIMIERA[c.valore])
-            bestBot[seme] = PUNTI_PRIMIERA[c.valore]
-    })
-
-    let primieraGioc = 0
-    let primieraBot = 0
-
-    Object.values(bestGioc).forEach(p => primieraGioc += p)
-    Object.values(bestBot).forEach(p => primieraBot += p)
-
-    if(primieraGioc > primieraBot)
-        return {ris: "g", bestGioc, bestBot}
-    else if(primieraBot > primieraGioc)
-        return {ris: "b", bestGioc, bestBot}
-
-    return {ris: null, bestGioc, bestBot}
-}
-
-function calcolaPrese(carta, banco) {
-    const target = carta.valore
-
-    // priorità: prese singole
-    const singole = banco.filter(c => c.valore === target)
-    if (singole.length > 0)
-        return singole.map(c => [c])
-
-    // combinazioni di 2+ carte
-    const risultati = []
-    function cerca(indice, correnti, somma) {
-        if (somma === target && correnti.length > 1) {
-            risultati.push([...correnti])
-            return
+        if (bestBot[seme] < PUNTI_PRIMIERA[c.valore]) {
+            bestBot[seme] = PUNTI_PRIMIERA[c.valore];
         }
-        if (somma > target || indice >= banco.length) return
-        cerca(indice + 1, [...correnti, banco[indice]], somma + banco[indice].valore)
-        cerca(indice + 1, correnti, somma)
+    });
+
+    let primieraGioc = 0;
+    let primieraBot = 0;
+
+    Object.values(bestGioc).forEach(p => primieraGioc += p);
+    Object.values(bestBot).forEach(p => primieraBot += p);
+
+    if (primieraGioc > primieraBot) {
+        return { ris: "g", bestGioc, bestBot };
+    } else if (primieraBot > primieraGioc) {
+        return { ris: "b", bestGioc, bestBot };
     }
-    cerca(0, [], 0)
-    return risultati
+
+    return { ris: null, bestGioc, bestBot };
 }
 
-function confermaCarta() {
-    if (!carta_selezionata) return
-
-    const carta = carta_selezionata.element
-
-    carta_selezionata = null
-
-    const prese = calcolaPrese(carta, banco_carte)
-
-    console.log(carta)
-
-    if (prese.length === 0) {
-        cartaAlBanco(carta)         
-    } else if (prese.length === 1) {
-        eseguiPresa(carta, prese[0]) 
-    } else {
-        mostraOpzioni(carta, prese)
+function aggiungiManoAStorico(risultato, aggiornaTotale) {
+    if (aggiornaTotale) {
+        totale_match.giocatore += risultato.totaleGiocatore;
+        totale_match.bot += risultato.totaleBot;
     }
-}
 
-function cartaAlBanco(carta) {
-    // rimuove la carta dalla mano del giocatore
-    giocatore_carte = giocatore_carte.filter(c => c !== carta)
-
-    renderTable()
-
-    animazioneCarta(carta, true)
-
-    setTimeout(() => {
-        // aggiunge la carta al banco
-        banco_carte.push(carta)
-
-        player_turn = false
-
-        renderTable()
-        gestisciTurno()
-    }, 1000)
-}
-
-function eseguiPresa(carta, scelta){
-    giocatore_mazzo.push(carta)
-
-    giocatore_carte = giocatore_carte.filter(c => c !== carta)
-
-    renderTable()
-
-    higlightCarte(scelta)
-
-    animazioneCarta(carta, true)
-
-    setTimeout(() => {
-        scelta.forEach(c => {
-            giocatore_mazzo.push(c)
-        })
-
-        banco_carte = banco_carte.filter(c => !scelta.includes(c))
-
-        if(banco_carte.length === 0 && (bot_carte.length > 0 || giocatore_carte.length > 0 || !mazzo.isEmpty))
-            scopa(true)
-
-        ultima_presa_giocatore = true
-        player_turn = false
-
-        renderTable()
-        gestisciTurno()
-    }, 1000)
-}
-
-function mostraOpzioni(carta, scelte){
-    let div_options = document.getElementsByClassName("div_options")
-    let opzioni_disp = document.getElementById("opzioni")
-
-    opzioni_disp.innerHTML = ""
-
-    scelte.forEach(scelta =>{
-        const elem_scelta = document.createElement("button")
-
-        for(let i=0; i<scelta.length; i++){
-            if(i>0)
-                elem_scelta.textContent += " + "
-            elem_scelta.textContent += scelta[i].valore + " " + scelta[i].seme + " "
-        }
-
-        elem_scelta.classList.add("play_button")
-        opzioni_disp.appendChild(elem_scelta)
-
-        elem_scelta.addEventListener("click", () => {
-            div_options[0].style.visibility = "hidden"
-            eseguiPresa(carta, scelta)
-        })
-    })
-
-    div_options[0].style.visibility = "visible"
-}
-
-function botGioca(){
-    const mossa = calcolaMossaBot()
-
-    if(mossa.scelta === "none"){
-        botCartaAlBanco(mossa.carta)
-    } else {
-        botEffettuaPresa(mossa.carta, mossa.scelta)
-    }
-}
-
-function botCartaAlBanco(carta){
-    // rimuove la carta dalla mano del giocatore
-    bot_carte = bot_carte.filter(c => c !== carta)
-
-    animazioneCarta(carta, false)
-
-    setTimeout(() => {
-        // aggiunge la carta al banco
-        banco_carte.push(carta)
-
-        player_turn = true
-
-        renderTable()
-        gestisciTurno()
-    }, 1000)
-}
-
-function botEffettuaPresa(carta, presa){
-    bot_mazzo.push(carta)
-
-    bot_carte = bot_carte.filter(c => c !== carta)
-
-    renderTable()
-
-    higlightCarte(presa)
-
-    animazioneCarta(carta, false)
-
-    setTimeout(() => {
-        presa.forEach(c => {
-            bot_mazzo.push(c)
-        })
-
-        banco_carte = banco_carte.filter(c => !presa.includes(c))
-
-        if(banco_carte.length === 0 && (bot_carte.length > 0 || giocatore_carte.length > 0 || !mazzo.isEmpty))
-            scopa(false)
-
-        ultima_presa_giocatore = false
-        player_turn = true
-
-        renderTable()
-        gestisciTurno()
-    }, 1000)
-}
-
-function higlightCarte(presa){
-    const carte = document.querySelectorAll("#banco_c .carta")
-    
-    presa.forEach(cartaPresa => {
-        const index = banco_carte.findIndex(c => 
-            c.seme === cartaPresa.seme && c.valore === cartaPresa.valore
-        );
-
-        carte[index].classList.add("highlighted");
-        
+    storico_mani.push({
+        mano: numero_mano,
+        totaleManoGiocatore: risultato.totaleGiocatore,
+        totaleManoBot: risultato.totaleBot,
+        dettaglioGiocatore: { ...risultato.giocatore },
+        dettaglioBot: { ...risultato.bot },
+        totaleMatchDopoMano: {
+            giocatore: totale_match.giocatore,
+            bot: totale_match.bot
+        },
+        iniziavaGiocatore: player_starts
     });
 }
 
-function scopa(giocatore){
-    let div
-    if(giocatore){
-        punti_giocatore.scope++
-        div = document.getElementById("scopa_g")
-    } else {
-        punti_bot.scope++
-        div = document.getElementById("scopa_b")
-    }
+function renderStorico() {
+    const storico = document.getElementById("storico-mani");
 
-    div.classList.remove("dissolvenza")
-    void div.offsetWidth
-    div.classList.add("dissolvenza")
+    storico.innerHTML = `
+        <h3>Storico mani</h3>
+        ${storico_mani.map(m => `
+            <div class="mano-item">
+                <p><strong>Mano ${m.mano}</strong> — ${m.totaleManoGiocatore} a ${m.totaleManoBot}</p>
+                <p>Totale cumulativo: ${m.totaleMatchDopoMano.giocatore} a ${m.totaleMatchDopoMano.bot}</p>
+            </div>
+        `).join("")}
+    `;
 }
 
-function calcolaMossaBot(){
-    let migliore_mossa = null
-    let migliore_score = -Infinity
+function creaHtmlDettaglio(risultato) {
+    return `
+        <p><u>Punti totali:</u> ${risultato.totaleGiocatore}</p>
+        <p>Primiera: ${risultato.giocatore.primiera} pt (${risultato.primiera.bestGioc.denari}, ${risultato.primiera.bestGioc.coppe}, ${risultato.primiera.bestGioc.bastoni}, ${risultato.primiera.bestGioc.spade})</p>
+        <p>Sette bello: ${risultato.giocatore["sette bello"]} pt</p>
+        <p>Carte: ${risultato.giocatore.carte} pt (${risultato.carteGiocatore})</p>
+        <p>Denari: ${risultato.giocatore.ori} pt (${risultato.oriGiocatore})</p>
+        <p>Scope: ${risultato.giocatore.scope} pt</p>
+    `;
+}
 
-    for(let i=0; i<bot_carte.length; i++){
-        const carta = bot_carte[i]
-        const opzioni = calcolaPrese(carta, banco_carte)
+function creaHtmlDettaglioBot(risultato) {
+    return `
+        <p><u>Punti totali:</u> ${risultato.totaleBot}</p>
+        <p>Primiera: ${risultato.bot.primiera} pt (${risultato.primiera.bestBot.denari}, ${risultato.primiera.bestBot.coppe}, ${risultato.primiera.bestBot.bastoni}, ${risultato.primiera.bestBot.spade})</p>
+        <p>Sette bello: ${risultato.bot["sette bello"]} pt</p>
+        <p>Carte: ${risultato.bot.carte} pt (${risultato.carteBot})</p>
+        <p>Denari: ${risultato.bot.ori} pt (${risultato.oriBot})</p>
+        <p>Scope: ${risultato.bot.scope} pt</p>
+    `;
+}
 
-        if(opzioni.length === 0){
-            const score = valutaButto(carta)
+/*
+    Endgame e riepiloghi
+*/
 
-            if(score > migliore_score){
-                migliore_mossa = {carta: carta, scelta: "none"}
-                migliore_score = score
-            }
+function mostraSceltaPrimaMano() {
+    const endGameDiv = document.getElementById("endgame");
+    const vincitore = document.getElementById("vincitore");
+    const pointsg = document.getElementById("pointsg");
+    const pointsb = document.getElementById("pointsb");
+    const storico = document.getElementById("storico-mani");
+    const actions = document.getElementById("endgame-actions");
 
-        } else {
-            opzioni.forEach(presa => {
-                const score = valutaPresa(carta, presa)
+    endGameDiv.className = "div_end_game fadein";
+    vincitore.textContent = "Prima mano conclusa";
+    pointsg.innerHTML = "<p>Vuoi trasformare la partita in una corsa a 11 punti oppure fermarti a questa mano?</p>";
+    pointsb.innerHTML = "";
+    storico.innerHTML = "";
+    actions.innerHTML = `
+        <button class="play_button" id="continua-a-11">Continua con partita a 11</button>
+        <button class="play_button" id="finisci-singola">Finisci partita</button>
+    `;
 
-                if(score > migliore_score){
-                    migliore_mossa = {carta: carta, scelta: presa}
-                    migliore_score = score
-                }
-            })
+    endGameDiv.style.display = "block";
+
+    document.getElementById("continua-a-11").onclick = () => {
+        modalita_partita = "a11";
+        scelta_prima_mano = false;
+        aggiungiManoAStorico(risultato_mano_corrente, true);
+        mostraRiepilogoManoA11();
+    };
+
+    document.getElementById("finisci-singola").onclick = () => {
+        modalita_partita = "singola";
+        scelta_prima_mano = false;
+        aggiungiManoAStorico(risultato_mano_corrente, false);
+        mostraRiepilogoFinale(false);
+    };
+}
+
+function mostraRiepilogoManoA11() {
+    const endGameDiv = document.getElementById("endgame");
+    const vincitore = document.getElementById("vincitore");
+    const pointsg = document.getElementById("pointsg");
+    const pointsb = document.getElementById("pointsb");
+    const actions = document.getElementById("endgame-actions");
+
+    endGameDiv.className = "div_end_game fadein";
+    vincitore.textContent = `Mano ${numero_mano} conclusa`;
+
+    pointsg.innerHTML = `
+        <h3>Tu</h3>
+        <p><b>Totale match:</b> ${totale_match.giocatore}</p>
+        ${creaHtmlDettaglio(risultato_mano_corrente)}
+    `;
+
+    pointsb.innerHTML = `
+        <h3>Computer</h3>
+        <p><b>Totale match:</b> ${totale_match.bot}</p>
+        ${creaHtmlDettaglioBot(risultato_mano_corrente)}
+    `;
+
+    renderStorico();
+
+    actions.innerHTML = `<button class="play_button" id="next-hand">Prossima mano</button>`;
+    document.getElementById("next-hand").onclick = preparaNuovaMano;
+
+    endGameDiv.style.display = "block";
+}
+
+function mostraRiepilogoFinale(usaTotaleMatch) {
+    const endGameDiv = document.getElementById("endgame");
+    const vincitore = document.getElementById("vincitore");
+    const pointsg = document.getElementById("pointsg");
+    const pointsb = document.getElementById("pointsb");
+    const actions = document.getElementById("endgame-actions");
+
+    const puntiFinaliGiocatore = usaTotaleMatch ? totale_match.giocatore : risultato_mano_corrente.totaleGiocatore;
+    const puntiFinaliBot = usaTotaleMatch ? totale_match.bot : risultato_mano_corrente.totaleBot;
+
+    endGameDiv.className = "div_end_game fadein";
+
+    if (puntiFinaliGiocatore > puntiFinaliBot) {
+        vincitore.textContent = "Hai vinto";
+        endGameDiv.classList.add("win");
+    } else if (puntiFinaliBot > puntiFinaliGiocatore) {
+        vincitore.textContent = "Hai perso";
+        endGameDiv.classList.add("lose");
+    } else {
+        vincitore.textContent = "Pareggio";
+        endGameDiv.classList.add("draw");
+    }
+
+    pointsg.innerHTML = `
+        <h3>Tu</h3>
+        <p><b>${usaTotaleMatch ? "Totale finale match" : "Totale mano"}</b>: ${puntiFinaliGiocatore}</p>
+        ${creaHtmlDettaglio(risultato_mano_corrente)}
+    `;
+
+    pointsb.innerHTML = `
+        <h3>Computer</h3>
+        <p><b>${usaTotaleMatch ? "Totale finale match" : "Totale mano"}</b>: ${puntiFinaliBot}</p>
+        ${creaHtmlDettaglioBot(risultato_mano_corrente)}
+    `;
+
+    renderStorico();
+
+    actions.innerHTML = `<button class="play_button" onclick="riavviaGioco()">Nuova partita</button>`;
+    endGameDiv.style.display = "block";
+}
+
+/*
+    Regole di presa
+*/
+
+function calcolaPrese(carta, banco) {
+    const target = carta.valore;
+
+    const singole = banco.filter(c => c.valore === target);
+    if (singole.length > 0) {
+        return singole.map(c => [c]);
+    }
+
+    const risultati = [];
+
+    function cerca(indice, correnti, somma) {
+        if (somma === target && correnti.length > 1) {
+            risultati.push([...correnti]);
+            return;
         }
+
+        if (somma > target || indice >= banco.length) {
+            return;
+        }
+
+        cerca(indice + 1, [...correnti, banco[indice]], somma + banco[indice].valore);
+        cerca(indice + 1, correnti, somma);
     }
 
-    return migliore_mossa
+    cerca(0, [], 0);
+    return risultati;
 }
 
-function valutaButto(carta){
-    let score = 0
+/*
+    Utility
+*/
 
-    if(carta.seme === "denari") 
-        score -= 15
+function scopa(giocatore) {
+    let div;
 
-    switch (carta.valore) {
-        case 7:
-            score -= 15
-            break;
-
-        case 6:
-            score -= 10
-            break
-
-        case 1:
-            score -= 9
-            break
-    
-        default:
-            break;
-    }
-
-    score -= carta.valore
-
-    return score
-}
-
-function valutaPresa(carta, presa){
-    let score = 0
-
-    const banco_rimasto = banco_carte.filter(c => 
-        !presa.some(p => p.seme === c.seme && p.valore === c.valore)
-    )
-
-    //scopa
-    if(banco_rimasto.length === 0)
-        score += 100
-
-    //piu carte prende meglio è
-    score += presa.length * 5
-
-    //settebello
-    if(carta.seme === "denari" && carta.valore === 7)
-        score += 30
-    if(presa.some(c => c.seme === "denari" && c.valore === 7))
-        score += 30
-
-    const lascia_7_denari = banco_rimasto.some(c => c.seme === "denari" && c.valore === 7)
-    if(lascia_7_denari) 
-        score -= 25  // stai regalando potenzialmente il settebello
-
-    //denari
-    if(carta.seme === "denari")
-        score += 8
-    score += presa.filter(c => c.seme === "denari").length * 8;
-
-    //primiera
-    if(carta.valore === 7)
-        score += 10
-    if(presa.some(c => c.valore === 7))
-        score += 10
-    if(carta.valore === 6)
-        score += 8
-    if(presa.some(c => c.valore === 6))
-        score += 8
-    if(carta.valore === 1)
-        score += 6
-    if(presa.some(c => c.valore === 1))
-        score += 6
-
-    score -= carta.valore
-
-    return score
-}
-
-function riavviaGioco(){
-    location.reload()
-}
-
-function animazioneCarta(carta, giocatore){
-    const main = document.querySelector("main")
-    const banco = document.getElementsByClassName("div_banco")[0].getBoundingClientRect()
-    const mainRect = main.getBoundingClientRect()
-
-    const img = document.createElement("img")
-
-    img.src = "assets/images/carte/" + carta.valore + "_" + carta.seme + ".jpg"
-    img.classList.add("carta" , "toanimate")
-
-    if(giocatore){
-        const divGiocatore = document.getElementsByClassName("div_giocatore")[0].getBoundingClientRect()
-        img.style.left = (divGiocatore.left + divGiocatore.width  / 2 - mainRect.left) + "px"
-        img.style.top  = (divGiocatore.top  + divGiocatore.height / 2 - mainRect.top - 70)  + "px"
+    if (giocatore) {
+        punteggio_mano_giocatore.scope++;
+        div = document.getElementById("scopa_g");
     } else {
-        img.style.left = (mainRect.width / 2) + "px"
-        img.style.top  = "0px"
+        punteggio_mano_bot.scope++;
+        div = document.getElementById("scopa_b");
     }
 
-    const targetX = (banco.left + banco.width  / 2) - mainRect.left - img.offsetWidth  / 2 
-    const targetY = (banco.top  + banco.height / 2) - mainRect.top  - img.offsetHeight / 2 - 40
-
-    img.style.setProperty("--tx", `${targetX - parseFloat(img.style.left)}px`)
-    img.style.setProperty("--ty", `${targetY - parseFloat(img.style.top)}px`)
-
-    main.appendChild(img)
-    img.classList.add("vola-al-banco")
-
-    img.addEventListener("animationend", () => img.remove(), { once: true })
+    div.classList.remove("dissolvenza");
+    void div.offsetWidth;
+    div.classList.add("dissolvenza");
 }
