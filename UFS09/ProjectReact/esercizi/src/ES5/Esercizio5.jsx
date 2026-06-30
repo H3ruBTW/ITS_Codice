@@ -28,10 +28,10 @@ export const Esercizio5 = () => {
             <form onSubmit={onSubmit}>
                 {error && (<p style={{color: "red"}}>{error}</p>)}
                 <label>Username
-                    <input type="text" value={username} onChange={() => onChange(event, "user")}/> 
+                    <input type="text" value={username} onChange={(e) => onChange(e, "user")}/> 
                 </label>
                 <label>Password
-                    <input type="text" value={password} onChange={() => onChange(event, "psw")}/>
+                    <input type="text" value={password} onChange={(e) => onChange(e, "psw")}/>
                 </label>
                 <button type="submit">Submit</button>
             </form>
