@@ -1,16 +1,35 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Outlet, NavLink } from "react-router";
+import lightVuotoLight from "./assets/light-vuoto-light.png";
+import darkVuotoLight from "./assets/dark-vuoto-light.png";
+import lightVuotoDark from "./assets/light-vuoto-dark.png";
+import darkVuotoDark from "./assets/dark-vuoto-dark.png";
 
 export const Root = () => {
+
+    const [theme, setTheme] = useState()
+
+    const changeTheme = () => {
+        document.documentElement.setAttribute("data-theme", theme)
+        setTheme((v) => v === "light" ? "dark" : "light")
+    }
+
     return (
         <>
             <header>
-                <h1>Currency Monitor</h1>
+                <div className="header-container">
+                    <h1>Currency Monitor</h1>
+                    <button className="theme-button" 
+                        title={(theme === "light") ? "Passa al tema scuro" : "Passa al tema chiaro"} 
+                        onClick={changeTheme}
+                    >    
+                    </button>
+                </div>
                 <nav>
                     <ul>
-                        <li><NavLink to="/">Home</NavLink></li>
-                        <li><NavLink to="/currency">Monitor Currency</NavLink></li>
-                        <li><NavLink to="/exchange">Currency Exchange Rates</NavLink></li>
+                        <li><NavLink className={({isActive}) => isActive ? "link-active" : "link"} to="/">Home</NavLink></li>
+                        <li><NavLink className={({isActive}) => isActive ? "link-active" : "link"} to="/currency">Monitor Currency</NavLink></li>
+                        <li><NavLink className={({isActive}) => isActive ? "link-active" : "link"} to="/exchange">Currency Exchange Rates</NavLink></li>
                     </ul>
                 </nav>
             </header>

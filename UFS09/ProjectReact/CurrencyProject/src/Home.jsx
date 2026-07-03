@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router";
 
 export const Home = () => {
     return (
@@ -10,8 +11,7 @@ export const Home = () => {
             </p>
             <p>
                 Puoi accedere a queste informazioni sui link della nav bar 
-                oppure <Link to="/currency">clicca qui per andare a vedere gli andamenti</Link>
-                o anche <Link to="/exchange">qui per gli scambi monetari</Link>
+                oppure <Link className="link" to="/currency">clicca qui per andare a vedere gli andamenti</Link> oppure <Link className="link" to="/exchange">qui per gli scambi monetari</Link>
             </p>
         </div>
     )
