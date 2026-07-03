@@ -7,7 +7,22 @@
     <title>currencyproject</title>
   </head>
   <body>
+    <span id="preferred-theme" hidden></span>
     <div id="root"></div>
+    <script>
+      (function () {
+        let preferred = "light";
+
+        if (
+          window.matchMedia &&
+          window.matchMedia("(prefers-color-scheme: dark)").matches
+        ) {
+          preferred = "dark";
+        }
+
+        document.getElementById("preferred-theme").textContent = preferred;
+      })();
+    </script>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

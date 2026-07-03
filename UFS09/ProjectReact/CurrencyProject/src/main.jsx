@@ -5,6 +5,7 @@ import { createBrowserRouter } from 'react-router'
 import { Root } from './Root'
 import { Home } from './Home'
 import './css/index.css'
+import { ContextProvider } from './ThemeContext'
 
 const router = createBrowserRouter([
   {
@@ -21,6 +22,8 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <RouterProvider router={router}/>
+    <ContextProvider>
+      <RouterProvider router={router}/>
+    </ContextProvider>
   </StrictMode>
 )
