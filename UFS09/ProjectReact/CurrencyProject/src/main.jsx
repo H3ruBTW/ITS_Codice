@@ -6,6 +6,7 @@ import { Root } from './Root'
 import { Home } from './Home'
 import './css/index.css'
 import { ContextProvider } from './ThemeContext'
+import { Andamento } from './Andamento'
 
 const router = createBrowserRouter([
   {
@@ -15,7 +16,11 @@ const router = createBrowserRouter([
       {
         index: true,
         element: <Home />
-      }
+      },
+      {
+        path: "/currency",
+        element: <Andamento />
+      },
     ]
   }
 ])

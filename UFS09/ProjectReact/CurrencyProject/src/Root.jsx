@@ -1,10 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Outlet, NavLink } from "react-router";
 import "./css/index.css"
-import lightVuotoLight from "./assets/light-vuoto-light.png";
-import darkVuotoLight from "./assets/dark-vuoto-light.png";
-import lightVuotoDark from "./assets/light-vuoto-dark.png";
-import darkVuotoDark from "./assets/dark-vuoto-dark.png";
 import { useThemeContext } from "./ThemeContext";
 
 export const Root = () => {
