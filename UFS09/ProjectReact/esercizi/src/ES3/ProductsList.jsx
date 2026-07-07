@@ -4,17 +4,13 @@ export const ProductList = () => {
     const [products, setProducts] = React.useState([])
     const [loading, setLoading] = React.useState(false)
 
-    const toggleLoading = () => {
-        setLoading(v => !v)
-    }
-
     useEffect(() => {
         (async () => {
-            toggleLoading()
+            setLoading(true)
             const response = await fetch("https://dummyjson.com/products")
             const json = await response.json()
             setProducts(json.products)
-            toggleLoading()
+            setLoading(false)
         })()
     }, [])
 
