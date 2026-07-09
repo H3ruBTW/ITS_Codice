@@ -4,6 +4,7 @@ import { RouterProvider } from "react-router/dom"
 import { createBrowserRouter } from 'react-router'
 import { Root } from './Root'
 import { Home } from './Home'
+import { Scambio } from './Scambio'
 import './css/index.css'
 import { ContextProvider } from './ThemeContext'
 import { Andamento } from './Andamento'
@@ -20,6 +21,10 @@ const router = createBrowserRouter([
       {
         path: "/currency",
         element: <Andamento />
+      },
+      {
+        path: "/exchange",
+        element: <Scambio />
       },
     ]
   }

@@ -203,10 +203,10 @@ export const Andamento = () => {
         <>
             <h1>Andamento {valuta}</h1>
 
-            <label className="andamento-label">
+            <label className="label">
                 Valuta
                 <br />
-                <select className="andamento-select" onChange={onChange}>
+                <select className="select" onChange={onChange}>
                     <option disabled>Più popolari</option>
 
                     {popularCurrencies.map(({ value, label }) => (
@@ -234,7 +234,7 @@ export const Andamento = () => {
                 </div>
 
                 <div>
-                    <label className="andamento-label">
+                    <label className="label">
                         In base a
                         <br />
                         <button className={quote === "EUR" ? "active" : ""}onClick={() => setQuote("EUR")}
