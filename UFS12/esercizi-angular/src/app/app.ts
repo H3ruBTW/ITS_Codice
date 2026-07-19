@@ -1,11 +1,12 @@
 import { Component, signal } from '@angular/core';
 import { Contatore } from './contatore.component';
+import { Form } from './form.component';
 
 @Component({
   selector: 'app-root',
-  imports: [],
+  imports: [Form],
   template: `
-    
+    <app-form>
   `,
   styles: [],
 })
