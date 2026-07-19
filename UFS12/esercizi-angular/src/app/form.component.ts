@@ -13,7 +13,7 @@ import { CommonModule } from "@angular/common";
         <input type="text" [(ngModel)]="testo">
         <button [disabled]="!titolo || !testo" (click)="creaNota()">Aggiungi nota</button>
         <p *ngIf="note.length === 0">Nessuna Nota</p>
-        <form-nota *ngFor="let nota of note" [titolo]="nota.titolo" [testo]="nota.testo">
+        <form-nota *ngFor="let nota of note" [titolo]="nota.titolo" [testo]="nota.testo" (eventoCancella)="rimuoviNota($event)">
     `
 })
 export class Form{
@@ -30,5 +30,11 @@ export class Form{
 
         this.titolo = ""
         this.testo = ""
+    }
+
+    rimuoviNota(nota: {titolo: string, testo:string}){
+        console.log("ciao")
+
+        this.note = this.note.filter(e => e.titolo !== nota.titolo && e.testo !== nota.testo)
     }
 }
