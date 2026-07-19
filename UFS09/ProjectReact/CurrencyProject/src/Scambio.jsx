@@ -2,8 +2,26 @@ import React, { useEffect, useState } from "react";
 import { popularCurrencies, otherCurrencies } from "./currency-library";
 
 export const Scambio = () => {
-    const [valuta1, setValuta1] = useState("EUR")
-    const [valuta2, setValuta2] = useState("USD")
+    const [valuta1, setValuta1] = useState(() => {
+        const saved = localStorage.getItem("pref");
+
+        try {
+            const parsed = saved ? JSON.parse(saved) : [];
+            return parsed[0]?.base ?? "EUR";
+        } catch {
+            return "EUR";
+        }
+    })
+    const [valuta2, setValuta2] = useState(() => {
+        const saved = localStorage.getItem("pref");
+
+        try {
+            const parsed = saved ? JSON.parse(saved) : [];
+            return parsed[0]?.quote ?? "USD";
+        } catch {
+            return "USD";
+        }
+    })
     const [start, setStart] = useState(1)
     const [finish, setFinish] = useState(0)
     const [trends, setTrends] = useState({
@@ -34,6 +52,15 @@ export const Scambio = () => {
         },
     })
     const [loading, setLoading] = useState(false);
+    const [preferiti, setPreferiti] = useState(() => {
+        const saved = localStorage.getItem("pref");
+        return saved ? JSON.parse(saved) : [];
+    });
+    const [preferitiAperto, setPreferitiAperto] = useState(false)
+    const isFavorite = preferiti.some(
+        (e) => e.base === valuta1 && e.quote === valuta2
+    );
+
     
     const onChange1 = (e) => {
         setValuta1(e.target.value);
@@ -221,9 +248,90 @@ export const Scambio = () => {
         }));
     };
 
+    const addremFav = () => {
+        let updatedPreferiti;
+
+        if (isFavorite) {
+            updatedPreferiti = preferiti.filter(
+                (e) => !(e.base === valuta1 && e.quote === valuta2)
+            );
+        } else {
+            updatedPreferiti = [
+                {
+                    base: valuta1,
+                    quote: valuta2,
+                },
+                ...preferiti,
+            ];
+        }
+
+        setPreferiti(updatedPreferiti);
+    };
+
+    useEffect(() => {
+        localStorage.setItem("pref", JSON.stringify(preferiti));
+    }, [preferiti]);
+
     return (
         <>
             <h1>Exchange rate {valuta1} ➩ {valuta2}</h1>
+
+            <div className="favourite_div">
+                <button onClick={addremFav}>{isFavorite ? "Rimuovi dai preferiti" : "Aggiungi ai preferiti"}</button>
+                <button onClick={() => setPreferitiAperto(true)}>Lista dei preferiti ({preferiti.length})</button>
+            </div>
+
+            {
+                preferitiAperto && (
+                    <div className="mostra-pref-div">
+                        <div className="mostra-pref-header">
+                            <h3>I tuoi preferiti</h3>
+                            <button
+                                className="close-pref-btn"
+                                onClick={() => setPreferitiAperto(false)}
+                                type="button"
+                            >
+                                ✕
+                            </button>
+                        </div>
+
+                        {
+                            preferiti.map((e, index) => {
+                                let val1 = popularCurrencies.find((c) => c.value === e.base);
+                                let val2 = popularCurrencies.find((c) => c.value === e.quote);
+
+                                if (val1 === undefined) {
+                                    val1 = otherCurrencies.find((c) => c.value === e.base);
+                                }
+
+                                if (val2 === undefined) {
+                                    val2 = otherCurrencies.find((c) => c.value === e.quote);
+                                }
+
+                                if (!val1 || !val2) {
+                                    return null;
+                                }
+
+                                const text = val1.label + " ➩ " + val2.label;
+
+                                return (
+                                    <button
+                                        key={`${e.base}-${e.quote}-${index}`}
+                                        className="scelta-preferiti"
+                                        onClick={() => {
+                                            setValuta1(val1.value);
+                                            setValuta2(val2.value);
+                                            setPreferitiAperto(false);
+                                        }}
+                                    >
+                                        {text}
+                                    </button>
+                                );
+                            })
+                        }
+                    </div>
+                )
+            }
 
             <div className="scambio-valute">
                 <label className="label">

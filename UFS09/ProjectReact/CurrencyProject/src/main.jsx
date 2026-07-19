@@ -8,6 +8,12 @@ import { Scambio } from './Scambio'
 import './css/index.css'
 import { ContextProvider } from './ThemeContext'
 import { Andamento } from './Andamento'
+import { registerSW } from "virtual:pwa-register";
+
+registerSW({
+    immediate: true,
+});
+
 
 const router = createBrowserRouter([
   {
