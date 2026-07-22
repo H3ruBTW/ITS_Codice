@@ -1,12 +1,13 @@
 import { Component, signal } from '@angular/core';
 import { Contatore } from './contatore.component';
 import { Form } from './form.component';
+import { API } from "./api-component";
 
 @Component({
   selector: 'app-root',
-  imports: [Form],
+  imports: [API],
   template: `
-    <app-form>
+    <app-api>
   `,
   styles: [],
 })
