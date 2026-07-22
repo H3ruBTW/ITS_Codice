@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, inject } from "@angular/core";
+import { ChangeDetectorRef, Component, inject, OnDestroy, OnInit } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { Subscription } from "rxjs";
 import { ApiCall } from "../servizi/dummy.service";
@@ -15,7 +15,7 @@ import { ProdottoStruct } from "../modelli/product.model";
         </article>
     `
 })
-export class Prodotto {
+export class Prodotto implements OnInit, OnDestroy {
 
     id: number
     httpSubscription?: Subscription
@@ -33,5 +33,9 @@ export class Prodotto {
                 this.cdr.detectChanges();
             }
         })
+    }
+
+    ngOnDestroy(): void {
+        this.httpSubscription?.unsubscribe()
     }
 }

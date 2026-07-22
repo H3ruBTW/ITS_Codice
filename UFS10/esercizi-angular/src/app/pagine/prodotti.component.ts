@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, inject, OnInit } from "@angular/core";
+import { ChangeDetectorRef, Component, inject, OnDestroy, OnInit } from "@angular/core";
 import { RouterLink } from "@angular/router";
 import { Subscription } from "rxjs";
 import { ApiCall } from "../servizi/dummy.service";
@@ -19,7 +19,7 @@ import { ProdottoStruct } from "../modelli/product.model";
     `,
     imports: [RouterLink]
 })
-export class Prodotti implements OnInit {
+export class Prodotti implements OnInit, OnDestroy {
     httpSubscription?: Subscription
     api = inject(ApiCall)
     prodotti: ProdottoStruct[] = []
@@ -33,5 +33,9 @@ export class Prodotti implements OnInit {
                 this.cdr.detectChanges();
             }
         })
+    }
+
+    ngOnDestroy(): void {
+        this.httpSubscription?.unsubscribe()
     }
 }
