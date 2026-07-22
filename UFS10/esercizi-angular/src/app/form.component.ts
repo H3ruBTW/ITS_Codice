@@ -12,8 +12,12 @@ import { CommonModule } from "@angular/common";
         <label>Testo</label>
         <input type="text" [(ngModel)]="testo">
         <button [disabled]="!titolo || !testo" (click)="creaNota()">Aggiungi nota</button>
-        <p *ngIf="note.length === 0">Nessuna Nota</p>
-        <form-nota *ngFor="let nota of note" [titolo]="nota.titolo" [testo]="nota.testo" (eventoCancella)="rimuoviNota($event)">
+    
+        @for(nota of note; track nota.titolo){
+            <form-nota [titolo]="nota.titolo" [testo]="nota.testo" (eventoCancella)="rimuoviNota($event)" />
+        } @empty {
+            <p>Nessuna Nota</p>
+        }
     `
 })
 export class Form{
